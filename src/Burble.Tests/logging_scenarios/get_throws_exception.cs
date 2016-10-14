@@ -4,7 +4,6 @@
    using System.Net.Http;
    using System.Threading.Tasks;
    using Burble.Events;
-   using Burble.Exceptions;
    using NUnit.Framework;
    using Shouldly;
 #if NET451
@@ -13,7 +12,7 @@
    using Microsoft.AspNetCore.Http;
 #endif
 
-   public class send_throws_exception
+   public class get_throws_exception
    {
       private readonly Exception _exceptionThrown;
       private readonly Exception _exception;
@@ -23,7 +22,7 @@
       private HttpClientTimedOut _lastTimeout;
       private HttpClientExceptionThrown _lastException;
 
-      public send_throws_exception()
+      public get_throws_exception()
       {
          _exceptionThrown = new Exception();
          var baseHttpClient = new ExceptionHttpClient(_exceptionThrown);
@@ -78,10 +77,7 @@
       public void should_throw_http_client_exception()
       {
          _exception.ShouldBeOfType<AggregateException>();
-
-         var httpClientException = _exception.InnerException;
-         httpClientException.ShouldBeOfType<HttpClientException>();
-         httpClientException.InnerException.ShouldBeSameAs(_exceptionThrown);
+         _exception.InnerException.ShouldBeSameAs(_exceptionThrown);
       }
 
       private class ExceptionHttpClient : IHttpClient

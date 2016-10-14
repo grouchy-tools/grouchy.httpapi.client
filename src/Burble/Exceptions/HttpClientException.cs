@@ -4,9 +4,11 @@
 
    public class HttpClientException : Exception
    {
-      public HttpClientException(string message, Exception innerException)
-         : base(message, innerException)
+      public HttpClientException(Exception innerException)
+         : base(null, innerException)
       {
       }
+
+      public Uri RequestUri { get; set; }
    }
 }

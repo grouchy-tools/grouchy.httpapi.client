@@ -40,15 +40,15 @@
             _onReceived(HttpClientResponseReceived.Create(response, stopwatch.ElapsedMilliseconds));
             return response;
          }
-         catch (TaskCanceledException)
+         catch (HttpClientTimeoutException)
          {
             _onTimeout(HttpClientTimedOut.Create(request, stopwatch.ElapsedMilliseconds));
-            throw new HttpClientTimeoutException();
+            throw;
          }
          catch (Exception e)
          {
             _onException(HttpClientExceptionThrown.Create(request, stopwatch.ElapsedMilliseconds, e));
-            throw new HttpClientException($"Failed to call {request.RequestUri}", e);
+            throw;
          }
       }
    }

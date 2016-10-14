@@ -1,7 +1,9 @@
 ﻿namespace Burble
 {
+   using System;
    using System.Net.Http;
    using System.Threading.Tasks;
+   using Burble.Exceptions;
 
    public class SimpleHttpClient : IHttpClient
    {
@@ -12,10 +14,21 @@
          _baseHttpClient = baseHttpClient;
       }
 
-      public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {
-         // Nothing to await so just return the Task
-         return _baseHttpClient.SendAsync(request);
+         try
+         {
+            var response = await _baseHttpClient.SendAsync(request).ConfigureAwait(false);
+            return response;
+         }
+         catch (TaskCanceledException)
+         {
+            throw new HttpClientTimeoutException();
+         }
+         catch (Exception e)
+         {
+            throw new HttpClientException(e) { RequestUri = request.RequestUri };
+         }
       }
    }
 }

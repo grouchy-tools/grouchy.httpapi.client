@@ -3,11 +3,14 @@
    using System;
    using System.Net.Http;
    using System.Threading.Tasks;
+   using Burble.Abstractions;
    using Burble.Events;
 
    public static class HttpContextExtensions
    {
-      public static Task<HttpResponseMessage> GetAsync(this IHttpClient httpClient, string requestUri)
+      public static Task<HttpResponseMessage> GetAsync(
+         this IHttpClient httpClient,
+         string requestUri)
       {
          var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
@@ -49,6 +52,32 @@
          int concurrentRequests)
       {
          return new ThrottlingHttpClient(httpClient, concurrentRequests);
+      }
+
+      public static IHttpClient AddRetrying(
+         this HttpClient baseHttpClient,
+         IRetryPredicate retryPredicate,
+         IRetryDelay retryDelay,
+         Action<HttpClientRetryAttempt> onRetry)
+      {
+         return new RetryingHttpClient(
+            new SimpleHttpClient(baseHttpClient),
+            retryPredicate,
+            retryDelay,
+            onRetry);
+      }
+
+      public static IHttpClient AddRetrying(
+         this IHttpClient httpClient,
+         IRetryPredicate retryPredicate,
+         IRetryDelay retryDelay,
+         Action<HttpClientRetryAttempt> onRetry)
+      {
+         return new RetryingHttpClient(
+            httpClient,
+            retryPredicate,
+            retryDelay,
+            onRetry);
       }
    }
 }
