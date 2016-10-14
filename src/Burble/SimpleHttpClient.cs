@@ -3,6 +3,7 @@
    using System;
    using System.Net.Http;
    using System.Threading.Tasks;
+   using Burble.Abstractions;
    using Burble.Exceptions;
 
    public class SimpleHttpClient : IHttpClient

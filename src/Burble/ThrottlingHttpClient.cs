@@ -3,6 +3,7 @@
    using System.Net.Http;
    using System.Threading;
    using System.Threading.Tasks;
+   using Burble.Abstractions;
 
    public class ThrottlingHttpClient : IHttpClient
    {

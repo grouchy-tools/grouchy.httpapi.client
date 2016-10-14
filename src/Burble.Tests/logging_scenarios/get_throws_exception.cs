@@ -3,14 +3,10 @@
    using System;
    using System.Net.Http;
    using System.Threading.Tasks;
+   using Burble.Abstractions;
    using Burble.Events;
    using NUnit.Framework;
    using Shouldly;
-#if NET451
-   using HttpContext = Microsoft.Owin.IOwinContext;
-#else
-   using Microsoft.AspNetCore.Http;
-#endif
 
    public class get_throws_exception
    {

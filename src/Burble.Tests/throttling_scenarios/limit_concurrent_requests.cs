@@ -4,6 +4,7 @@
    using System.Net;
    using System.Threading.Tasks;
    using System.Net.Http;
+   using Burble.Abstractions;
    using NUnit.Framework;
    using Shouldly;
 
