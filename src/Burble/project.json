@@ -25,8 +25,7 @@
          },
          "frameworkAssemblies": {
             "System.Threading.Tasks": "",
-            "System.Net.Http": "",
-            "System.Runtime": ""
+            "System.Net.Http": ""
          }
       }
    },
