@@ -1,0 +1,47 @@
+-
+  branches:
+    except:
+      - stable
+  version: '{branch}-build{build}'
+  skip_tags: true
+  clone_depth: 1
+  cache: C:\Users\appveyor\.nuget\packages
+  configuration:
+    - Debug
+    - Release
+  before_build:
+    - ps: Import-Module .\build\psake.psm1
+    - ps: $env:VERSION_SUFFIX = 'preview' + "$env:APPVEYOR_BUILD_NUMBER".PadLeft(4, "0")
+  build_script:
+    - ps: Invoke-Psake .\build\build.ps1 -properties @{"Configuration"=$env:CONFIGURATION;"VersionSuffix"=$env:VERSION_SUFFIX}
+  test: off
+  artifacts:
+    - path: 'artifacts\*.nupkg'
+  deploy:
+    on:
+      configuration: Debug
+    provider: NuGet
+    api_key:
+      secure: 4eGPThK/wSpRmfINQgAGQZD/e8r6FKRfp0SN4nB5/FBTHKJ1xIf/BK3/Iz5csDFm
+    artifact: /.*\.nupkg/
+-
+  branches:
+    only:
+      - stable
+  version: '{branch}-build{build}'
+  skip_tags: true
+  clone_depth: 1
+  cache: C:\Users\appveyor\.nuget\packages
+  configuration: Release
+  before_build:
+    - ps: Import-Module .\build\psake.psm1
+  build_script:
+    - ps: Invoke-Psake .\build\build.ps1 -properties @{"Configuration"=$env:CONFIGURATION}
+  test: off
+  artifacts:
+    - path: 'artifacts\*.nupkg'
+  deploy:
+    provider: NuGet
+    api_key:
+      secure: 4eGPThK/wSpRmfINQgAGQZD/e8r6FKRfp0SN4nB5/FBTHKJ1xIf/BK3/Iz5csDFm
+    artifact: /.*\.nupkg/

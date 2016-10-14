@@ -1,0 +1,32 @@
+﻿{
+   "version": "0.0.1-*",
+   "testRunner": "nunit",
+   "dependencies": {
+      "Burble": {
+         "target": "project"
+      },
+      "NUnit": "3.5.0",
+      "Banshee": "0.0.2",
+      "Shouldly": "2.8.2",
+      "dotnet-test-nunit": "3.4.0-beta-2"
+   },
+   "frameworks": {
+      "netcoreapp1.0": {
+         "imports": "portable-net45+win8", // This avoids "The dependency NUnit 3.5.0 does not support framework .NETCoreApp,Version=v1.0"
+         "dependencies": {
+            "Microsoft.NETCore.App": {
+               "version": "1.0.1",
+               "type": "platform"
+            }
+         }
+      },
+      "net451": {
+         "dependencies": {
+            "Microsoft.Owin.Host.HttpListener": "3.0.1"
+         },
+         "frameworkAssemblies": {
+            "System.Runtime": ""
+         }
+      }
+   }
+}
