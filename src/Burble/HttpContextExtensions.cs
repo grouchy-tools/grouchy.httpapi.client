@@ -43,5 +43,12 @@
             onTimeout,
             onException);
       }
+
+      public static IHttpClient AddThrottling(
+         this IHttpClient httpClient,
+         int concurrentRequests)
+      {
+         return new ThrottlingHttpClient(httpClient, concurrentRequests);
+      }
    }
 }

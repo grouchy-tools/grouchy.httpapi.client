@@ -36,7 +36,7 @@
          try
          {
             _onInitiated(HttpClientRequestInitiated.Create(request));
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
             _onReceived(HttpClientResponseReceived.Create(response, stopwatch.ElapsedMilliseconds));
             return response;
          }
