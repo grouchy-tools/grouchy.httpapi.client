@@ -5,6 +5,7 @@
    using System.Threading.Tasks;
    using System.Net.Http;
    using Burble.Abstractions;
+   using Burble.Throttling;
    using NUnit.Framework;
    using Shouldly;
 
@@ -18,7 +19,7 @@
       public limit_concurrent_requests()
       {
          _baseHttpClient = new CountingHttpClient();
-         var httpClient = _baseHttpClient.AddThrottling(ExpectedMaxConcurrentRequests);
+         var httpClient = _baseHttpClient.AddThrottling(new SemaphoneThrottleSync(ExpectedMaxConcurrentRequests));
 
          var tasks = Enumerable.Range(1, ExpectedTotalRequests).Select(c => httpClient.GetAsync("/ping")).ToArray();
          Task.WhenAll(tasks).Wait(1000);

@@ -1,35 +1,34 @@
 ﻿namespace Burble
 {
    using System.Net.Http;
-   using System.Threading;
    using System.Threading.Tasks;
    using Burble.Abstractions;
 
    public class ThrottlingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;
-      private readonly SemaphoreSlim _semaphore;
+      private readonly IThrottleSync _throttleSync;
 
       public ThrottlingHttpClient(
          IHttpClient httpClient,
-         int concurrentRequests)
+         IThrottleSync throttleSync)
       {
          _httpClient = httpClient;
-         _semaphore = new SemaphoreSlim(concurrentRequests);
+         _throttleSync = throttleSync;
       }
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {
          try
          {
-            await _semaphore.WaitAsync().ConfigureAwait(false);
+            await _throttleSync.WaitAsync().ConfigureAwait(false);
 
             var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
             return response;
          }
          finally
          {
-            _semaphore.Release();
+            _throttleSync.Release();
          }
       }
    }

@@ -4,6 +4,7 @@
    using System.Threading.Tasks;
    using System.Net.Http;
    using Burble.Abstractions;
+   using Burble.Throttling;
    using NUnit.Framework;
    using Shouldly;
 
@@ -18,7 +19,7 @@
       {
          _expectedResponse = new HttpResponseMessage(HttpStatusCode.Accepted);
          var baseHttpClient = new StubHttpClient(_expectedResponse);
-         var httpClient = baseHttpClient.AddThrottling(ConcurrentRequests);
+         var httpClient = baseHttpClient.AddThrottling(new SemaphoneThrottleSync(ConcurrentRequests));
 
          _actualResponse = httpClient.GetAsync("/ping").Result;
       }

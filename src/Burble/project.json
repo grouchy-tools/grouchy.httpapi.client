@@ -1,5 +1,5 @@
 {
-   "version": "0.0.3-*",
+   "version": "0.0.4-*",
    "title": "Burble",
    "description": "HTTP API client library",
    "authors": [ "Andrew Craven" ],

@@ -49,9 +49,9 @@
 
       public static IHttpClient AddThrottling(
          this IHttpClient httpClient,
-         int concurrentRequests)
+         IThrottleSync throttleSync)
       {
-         return new ThrottlingHttpClient(httpClient, concurrentRequests);
+         return new ThrottlingHttpClient(httpClient, throttleSync);
       }
 
       public static IHttpClient AddRetrying(
