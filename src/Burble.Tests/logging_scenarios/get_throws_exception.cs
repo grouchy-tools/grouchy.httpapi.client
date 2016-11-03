@@ -1,32 +1,24 @@
 ﻿namespace Burble.Tests.logging_scenarios
 {
    using System;
+   using System.Linq;
    using System.Net.Http;
    using System.Threading.Tasks;
    using Burble.Abstractions;
-   using Burble.Events;
    using NUnit.Framework;
    using Shouldly;
 
    public class get_throws_exception
    {
       private readonly Exception _exceptionThrown;
+      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
       private readonly Exception _exception;
-
-      private HttpClientRequestInitiated _lastRequest;
-      private HttpClientResponseReceived _lastResponse;
-      private HttpClientTimedOut _lastTimeout;
-      private HttpClientExceptionThrown _lastException;
 
       public get_throws_exception()
       {
          _exceptionThrown = new Exception();
          var baseHttpClient = new ExceptionHttpClient(_exceptionThrown);
-         var httpClient = baseHttpClient.AddLogging(
-            e => { _lastRequest = e; },
-            e => { _lastResponse = e; },
-            e => { _lastTimeout = e; },
-            e => { _lastException = e; });
+         var httpClient = baseHttpClient.AddLogging(_callback);
 
          try
          {
@@ -41,32 +33,34 @@
       [Test]
       public void should_log_request_initiated()
       {
-         _lastRequest.ShouldNotBeNull();
-         _lastRequest.EventType.ShouldBe("HttpClientRequestInitiated");
-         _lastRequest.Uri.ShouldBe("/ping");
-         _lastRequest.Method.ShouldBe("GET");
+         var lastRequest = _callback.RequestsInitiated.Last();
+         lastRequest.ShouldNotBeNull();
+         lastRequest.EventType.ShouldBe("HttpClientRequestInitiated");
+         lastRequest.Uri.ShouldBe("/ping");
+         lastRequest.Method.ShouldBe("GET");
       }
 
       [Test]
       public void should_not_log_response()
       {
-         _lastResponse.ShouldBeNull();
+         _callback.ResponsesReceived.ShouldBeEmpty();
       }
 
       [Test]
       public void should_not_log_timeout_received()
       {
-         _lastTimeout.ShouldBeNull();
+         _callback.TimeOuts.ShouldBeEmpty();
       }
 
       [Test]
       public void should_log_exception_received()
       {
-         _lastException.ShouldNotBeNull();
-         _lastException.EventType.ShouldBe("HttpClientExceptionThrown");
-         _lastException.Uri.ShouldBe("/ping");
-         _lastException.Method.ShouldBe("GET");
-         _lastException.Exception.ShouldBeSameAs(_exceptionThrown);
+         var lastException = _callback.ExceptionsThrown.Last();
+         lastException.ShouldNotBeNull();
+         lastException.EventType.ShouldBe("HttpClientExceptionThrown");
+         lastException.Uri.ShouldBe("/ping");
+         lastException.Method.ShouldBe("GET");
+         lastException.Exception.ShouldBeSameAs(_exceptionThrown);
       }
 
       [Test]

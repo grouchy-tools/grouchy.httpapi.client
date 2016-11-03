@@ -1,11 +1,9 @@
 ﻿namespace Burble.Tests.retrying_scenarios
 {
-   using System.Collections.Generic;
    using System.Net;
    using System.Net.Http;
    using System.Threading.Tasks;
    using Banshee;
-   using Burble.Events;
    using NUnit.Framework;
    using Shouldly;
 #if NET451
@@ -16,7 +14,7 @@
 
    public class success_so_no_retry
    {
-      private readonly List<HttpClientRetryAttempt> _retryAttempts = new List<HttpClientRetryAttempt>();
+      private readonly StubRetryingCallback _callback = new StubRetryingCallback();
       private readonly HttpResponseMessage _response;
 
       public success_so_no_retry()
@@ -27,7 +25,7 @@
             var httpClient = baseHttpClient.AddRetrying(
                new StubRetryPredicate(3),
                new StubRetryDelay(10),
-               e => { _retryAttempts.Add(e); });
+               _callback);
 
             _response = httpClient.GetAsync("/ping").Result;
          }
@@ -36,7 +34,7 @@
       [Test]
       public void should_not_log_retry_attempts()
       {
-         _retryAttempts.Count.ShouldBe(0);
+         _callback.RetryAttempts.Count.ShouldBe(0);
       }
 
       [Test]

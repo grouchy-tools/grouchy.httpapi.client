@@ -7,27 +7,19 @@
    using Burble.Abstractions;
    using Burble.Events;
    using Burble.Exceptions;
+   using Burble.Logging;
 
    public class LoggingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;
-      private readonly Action<HttpClientRequestInitiated> _onInitiated;
-      private readonly Action<HttpClientResponseReceived> _onReceived;
-      private readonly Action<HttpClientTimedOut> _onTimeout;
-      private readonly Action<HttpClientExceptionThrown> _onException;
+      private readonly ILoggingCallback _callback;
 
       public LoggingHttpClient(
          IHttpClient httpClient,
-         Action<HttpClientRequestInitiated> onInitiated,
-         Action<HttpClientResponseReceived> onReceived,
-         Action<HttpClientTimedOut> onTimeout,
-         Action<HttpClientExceptionThrown> onException)
+         ILoggingCallback callback)
       {
          _httpClient = httpClient;
-         _onInitiated = onInitiated;
-         _onReceived = onReceived;
-         _onTimeout = onTimeout;
-         _onException = onException;
+         _callback = callback;
       }
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
@@ -36,19 +28,19 @@
 
          try
          {
-            _onInitiated(HttpClientRequestInitiated.Create(request));
+            _callback.OnInitiated(HttpClientRequestInitiated.Create(request));
             var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-            _onReceived(HttpClientResponseReceived.Create(response, stopwatch.ElapsedMilliseconds));
+            _callback.OnReceived(HttpClientResponseReceived.Create(response, stopwatch.ElapsedMilliseconds));
             return response;
          }
          catch (HttpClientTimeoutException)
          {
-            _onTimeout(HttpClientTimedOut.Create(request, stopwatch.ElapsedMilliseconds));
+            _callback.OnTimeout(HttpClientTimedOut.Create(request, stopwatch.ElapsedMilliseconds));
             throw;
          }
          catch (Exception e)
          {
-            _onException(HttpClientExceptionThrown.Create(request, stopwatch.ElapsedMilliseconds, e));
+            _callback.OnException(HttpClientExceptionThrown.Create(request, stopwatch.ElapsedMilliseconds, e));
             throw;
          }
       }

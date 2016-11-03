@@ -1,10 +1,10 @@
 ﻿namespace Burble
 {
-   using System;
    using System.Net.Http;
    using System.Threading.Tasks;
    using Burble.Abstractions;
-   using Burble.Events;
+   using Burble.Logging;
+   using Burble.Retrying;
 
    public static class HttpContextExtensions
    {
@@ -19,32 +19,20 @@
 
       public static IHttpClient AddLogging(
          this HttpClient baseHttpClient,
-         Action<HttpClientRequestInitiated> onInitiated,
-         Action<HttpClientResponseReceived> onReceived,
-         Action<HttpClientTimedOut> onTimeout,
-         Action<HttpClientExceptionThrown> onException)
+         ILoggingCallback callback)
       {
          return new LoggingHttpClient(
             new SimpleHttpClient(baseHttpClient),
-            onInitiated,
-            onReceived,
-            onTimeout,
-            onException);
+            callback);
       }
 
       public static IHttpClient AddLogging(
          this IHttpClient httpClient,
-         Action<HttpClientRequestInitiated> onInitiated,
-         Action<HttpClientResponseReceived> onReceived,
-         Action<HttpClientTimedOut> onTimeout,
-         Action<HttpClientExceptionThrown> onException)
+         ILoggingCallback callback)
       {
          return new LoggingHttpClient(
             httpClient,
-            onInitiated,
-            onReceived,
-            onTimeout,
-            onException);
+            callback);
       }
 
       public static IHttpClient AddThrottling(
@@ -58,26 +46,26 @@
          this HttpClient baseHttpClient,
          IRetryPredicate retryPredicate,
          IRetryDelay retryDelay,
-         Action<HttpClientRetryAttempt> onRetry)
+         IRetryingCallback callback)
       {
          return new RetryingHttpClient(
             new SimpleHttpClient(baseHttpClient),
             retryPredicate,
             retryDelay,
-            onRetry);
+            callback);
       }
 
       public static IHttpClient AddRetrying(
          this IHttpClient httpClient,
          IRetryPredicate retryPredicate,
          IRetryDelay retryDelay,
-         Action<HttpClientRetryAttempt> onRetry)
+         IRetryingCallback callback)
       {
          return new RetryingHttpClient(
             httpClient,
             retryPredicate,
             retryDelay,
-            onRetry);
+            callback);
       }
    }
 }

@@ -1,11 +1,9 @@
 ﻿namespace Burble.Tests.retrying_scenarios
 {
-   using System.Collections.Generic;
    using System.Net;
    using System.Net.Http;
    using System.Threading.Tasks;
    using Banshee;
-   using Burble.Events;
    using NUnit.Framework;
    using Shouldly;
 #if NET451
@@ -18,7 +16,7 @@
    {
       private const int ExpectedRetries = 3;
 
-      private readonly List<HttpClientRetryAttempt> _retryAttempts = new List<HttpClientRetryAttempt>();
+      private readonly StubRetryingCallback _callback = new StubRetryingCallback();
       private readonly HttpResponseMessage _response;
 
       public multiple_retry_without_timeout()
@@ -29,7 +27,7 @@
             var httpClient = baseHttpClient.AddRetrying(
                new StubRetryPredicate(ExpectedRetries),
                new StubRetryDelay(10),
-               e => { _retryAttempts.Add(e); });
+               _callback);
 
             _response = httpClient.GetAsync("/ping").Result;
          }
@@ -38,18 +36,18 @@
       [Test]
       public void should_log_three_attempts()
       {
-         _retryAttempts.Count.ShouldBe(ExpectedRetries);
-         _retryAttempts[0].Attempt.ShouldBe(1);
-         _retryAttempts[1].Attempt.ShouldBe(2);
-         _retryAttempts[2].Attempt.ShouldBe(3);
+         _callback.RetryAttempts.Count.ShouldBe(ExpectedRetries);
+         _callback.RetryAttempts[0].Attempt.ShouldBe(1);
+         _callback.RetryAttempts[1].Attempt.ShouldBe(2);
+         _callback.RetryAttempts[2].Attempt.ShouldBe(3);
       }
 
       [Test]
       public void should_log_retry_attempt()
       {
-         _retryAttempts[0].EventType.ShouldBe("HttpClientRetryAttempt");
-         _retryAttempts[0].Uri.ShouldBe("/ping");
-         _retryAttempts[0].Method.ShouldBe("GET");
+         _callback.RetryAttempts[0].EventType.ShouldBe("HttpClientRetryAttempt");
+         _callback.RetryAttempts[0].Uri.ShouldBe("/ping");
+         _callback.RetryAttempts[0].Method.ShouldBe("GET");
       }
 
       [Test]

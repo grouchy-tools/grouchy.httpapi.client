@@ -6,24 +6,25 @@
    using System.Threading.Tasks;
    using Burble.Abstractions;
    using Burble.Events;
+   using Burble.Retrying;
 
    public class RetryingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;
       private readonly IRetryPredicate _retryPredicate;
       private readonly IRetryDelay _retryDelay;
-      private readonly Action<HttpClientRetryAttempt> _onRetry;
+      private readonly IRetryingCallback _callback;
 
       public RetryingHttpClient(
          IHttpClient httpClient,
          IRetryPredicate retryPredicate,
          IRetryDelay retryDelay,
-         Action<HttpClientRetryAttempt> onRetry)
+         IRetryingCallback callback)
       {
          _httpClient = httpClient;
          _retryPredicate = retryPredicate;
          _retryDelay = retryDelay;
-         _onRetry = onRetry;
+         _callback = callback;
       }
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
@@ -62,7 +63,7 @@
                var delayMs = _retryDelay.DelayMs(retryAttempts);
                await Task.Delay(delayMs).ConfigureAwait(false);
 
-               _onRetry(new HttpClientRetryAttempt
+               _callback.OnRetry(new HttpClientRetryAttempt
                {
                   Timestamp = DateTimeOffset.UtcNow,
                   Method = request.Method.Method,

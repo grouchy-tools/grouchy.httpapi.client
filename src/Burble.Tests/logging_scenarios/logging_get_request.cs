@@ -1,10 +1,10 @@
 ﻿namespace Burble.Tests.logging_scenarios
 {
+   using System.Linq;
    using System.Net;
    using System.Net.Http;
    using System.Threading.Tasks;
    using Banshee;
-   using Burble.Events;
    using NUnit.Framework;
    using Shouldly;
 #if NET451
@@ -15,21 +15,15 @@
 
    public class logging_get_request
    {
+      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
       private readonly HttpResponseMessage _response;
-
-      private HttpClientRequestInitiated _lastRequest;
-      private HttpClientResponseReceived _lastResponse;
 
       public logging_get_request()
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
          {
-            var httpClient = baseHttpClient.AddLogging(
-               e => { _lastRequest = e; },
-               e => { _lastResponse = e; },
-               e => { },
-               e => { });
+            var httpClient = baseHttpClient.AddLogging(_callback);
 
             _response = httpClient.GetAsync("/ping").Result;
          }
@@ -52,20 +46,22 @@
       [Test]
       public void should_log_request_initiated()
       {
-         _lastRequest.ShouldNotBeNull();
-         _lastRequest.EventType.ShouldBe("HttpClientRequestInitiated");
-         _lastRequest.Uri.ShouldBe("/ping");
-         _lastRequest.Method.ShouldBe("GET");
+         var lastRequest = _callback.RequestsInitiated.Last();
+         lastRequest.ShouldNotBeNull();
+         lastRequest.EventType.ShouldBe("HttpClientRequestInitiated");
+         lastRequest.Uri.ShouldBe("/ping");
+         lastRequest.Method.ShouldBe("GET");
       }
 
       [Test]
       public void should_log_response_received()
       {
-         _lastResponse.ShouldNotBeNull();
-         _lastResponse.EventType.ShouldBe("HttpClientResponseReceived");
-         _lastResponse.Uri.ShouldBe("/ping");
-         _lastResponse.Method.ShouldBe("GET");
-         _lastResponse.StatusCode.ShouldBe(200);
+         var lastResponse = _callback.ResponsesReceived.Last();
+         lastResponse.ShouldNotBeNull();
+         lastResponse.EventType.ShouldBe("HttpClientResponseReceived");
+         lastResponse.Uri.ShouldBe("/ping");
+         lastResponse.Method.ShouldBe("GET");
+         lastResponse.StatusCode.ShouldBe(200);
       }
 
       private class PingWebApi : StubWebApiHost
