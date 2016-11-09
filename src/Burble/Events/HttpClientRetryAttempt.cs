@@ -1,6 +1,7 @@
 ﻿namespace Burble.Events
 {
    using System;
+   using System.Collections.Generic;
    using System.Net.Http;
 
    public class HttpClientRetryAttempt
@@ -14,6 +15,8 @@
       public string Method { get; set; }
 
       public int Attempt { get; set; }
+
+      public IDictionary<string, object> Tags { get; set; }
 
       public static HttpClientRetryAttempt Create(HttpRequestMessage request, int attempt)
       {

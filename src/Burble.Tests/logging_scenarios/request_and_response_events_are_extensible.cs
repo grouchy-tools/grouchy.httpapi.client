@@ -1,5 +1,6 @@
-﻿namespace Burble.Tests.retrying_scenarios
+﻿namespace Burble.Tests.logging_scenarios
 {
+   using System.Linq;
    using System.Net;
    using System.Net.Http;
    using System.Threading.Tasks;
@@ -12,43 +13,35 @@
    using Microsoft.AspNetCore.Http;
 #endif
 
-   public class success_so_no_retry
+   public class request_and_response_events_are_extensible
    {
-      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
-      private readonly HttpResponseMessage _response;
+      private readonly CustomisingLoggingCallback _callback = new CustomisingLoggingCallback();
 
-      public success_so_no_retry()
+      public request_and_response_events_are_extensible()
       {
-         using (var webApi = new success_so_no_retry.PingWebApi())
+         using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
          {
-            var httpClient = baseHttpClient.AddRetrying(
-               new StubRetryPredicate(3),
-               new StubRetryDelay(10),
-               _callback);
+            var httpClient = baseHttpClient.AddLogging(_callback);
 
-            _response = httpClient.GetAsync("/ping").Result;
+            httpClient.GetAsync("/ping").Wait();
          }
       }
-
+      
       [Test]
-      public void should_not_log_retry_attempts()
+      public void should_log_request_initiated()
       {
-         _callback.RetryAttempts.Count.ShouldBe(0);
+         var lastRequest = _callback.RequestsInitiated.Last();
+         lastRequest.Tags.Count.ShouldBe(1);
+         lastRequest.Tags["Key"].ShouldBe("Initiated");
       }
 
       [Test]
-      public void should_return_status_code_200()
+      public void should_log_response_received()
       {
-         _response.StatusCode.ShouldBe(HttpStatusCode.OK);
-      }
-
-      [Test]
-      public void should_return_content()
-      {
-         var content = _response.Content.ReadAsStringAsync().Result;
-
-         content.ShouldBe("pong");
+         var lastResponse = _callback.ResponsesReceived.Last();
+         lastResponse.Tags.Count.ShouldBe(1);
+         lastResponse.Tags["Key"].ShouldBe("Received");
       }
 
       private class PingWebApi : StubWebApiHost

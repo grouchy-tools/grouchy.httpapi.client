@@ -1,9 +1,6 @@
 ﻿namespace Burble.Tests.retrying_scenarios
 {
    using System;
-   using System.Net.Http;
-   using System.Threading.Tasks;
-   using Burble.Abstractions;
    using NUnit.Framework;
    using Shouldly;
 
@@ -11,7 +8,7 @@
    {
       private const int ExpectedRetries = 3;
 
-      private readonly StubRetryingCallback _callback = new StubRetryingCallback();
+      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
       private readonly Exception _exceptionToThrow;
       private readonly Exception _caughtException;
 
@@ -56,21 +53,6 @@
       {
          _caughtException.ShouldBeOfType<AggregateException>();
          _caughtException.InnerException.ShouldBeSameAs(_exceptionToThrow);
-      }
-
-      private class ExceptionHttpClient : IHttpClient
-      {
-         private readonly Exception _exception;
-
-         public ExceptionHttpClient(Exception exception)
-         {
-            _exception = exception;
-         }
-
-         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
-         {
-            throw _exception;
-         }
       }
    }
 }

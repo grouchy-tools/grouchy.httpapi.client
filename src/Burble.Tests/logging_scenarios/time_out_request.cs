@@ -23,8 +23,7 @@
       public time_out_request()
       {
          using (var webApi = new PingWebApi())
-         using (
-            var baseHttpClient = new HttpClient {BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50)})
+         using (var baseHttpClient = new HttpClient {BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50)})
          {
             var httpClient = baseHttpClient.AddLogging(_callback);
 

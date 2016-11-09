@@ -1,6 +1,7 @@
 ﻿namespace Burble.Events
 {
    using System;
+   using System.Collections.Generic;
    using System.Net.Http;
 
    public class HttpClientTimedOut
@@ -14,6 +15,8 @@
       public string Method { get; set; }
 
       public long DurationMs { get; set; }
+
+      public IDictionary<string, object> Tags { get; set; }
 
       public static HttpClientTimedOut Create(HttpRequestMessage request, long durationMs)
       {

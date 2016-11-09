@@ -1,6 +1,7 @@
 ﻿namespace Burble.Events
 {
    using System;
+   using System.Collections.Generic;
    using System.Net.Http;
 
    public class HttpClientRequestInitiated
@@ -12,6 +13,8 @@
       public string Uri { get; set; }
 
       public string Method { get; set; }
+
+      public IDictionary<string, object> Tags { get; set; }
 
       public static HttpClientRequestInitiated Create(HttpRequestMessage request)
       {

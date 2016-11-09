@@ -1,6 +1,7 @@
 ﻿namespace Burble.Events
 {
    using System;
+   using System.Collections.Generic;
    using System.Net.Http;
 
    public class HttpClientExceptionThrown
@@ -16,6 +17,8 @@
       public long DurationMs { get; set; }
 
       public Exception Exception { get; set; }
+
+      public IDictionary<string, object> Tags { get; set; }
 
       public static HttpClientExceptionThrown Create(HttpRequestMessage request, long durationMs, Exception exception)
       {

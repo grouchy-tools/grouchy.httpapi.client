@@ -16,7 +16,7 @@
    {
       private const int ExpectedRetries = 3;
 
-      private readonly StubRetryingCallback _callback = new StubRetryingCallback();
+      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
       private readonly HttpResponseMessage _response;
 
       public multiple_retry_without_timeout()
