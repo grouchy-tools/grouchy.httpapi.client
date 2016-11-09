@@ -7,7 +7,7 @@
 
    public class exception_event_is_extensible
    {
-      private readonly CustomisingLoggingCallback _callback = new CustomisingLoggingCallback();
+      private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
       public exception_event_is_extensible()
       {
@@ -29,7 +29,7 @@
       {
          var lastRequest = _callback.ExceptionsThrown.Last();
          lastRequest.Tags.Count.ShouldBe(1);
-         lastRequest.Tags["Key"].ShouldBe("ExceptionThrown");
+         lastRequest.Tags["Key"].ShouldBe("HttpClientExceptionThrown");
       }
    }
 }

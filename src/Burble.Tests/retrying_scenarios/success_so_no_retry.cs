@@ -14,7 +14,7 @@
 
    public class success_so_no_retry
    {
-      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
+      private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly HttpResponseMessage _response;
 
       public success_so_no_retry()
@@ -34,7 +34,7 @@
       [Test]
       public void should_not_log_retry_attempts()
       {
-         _callback.RetryAttempts.Count.ShouldBe(0);
+         _callback.RetryAttempts.Length.ShouldBe(0);
       }
 
       [Test]

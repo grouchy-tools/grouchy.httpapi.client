@@ -7,7 +7,7 @@
 
    public class retry_event_is_extensible
    {
-      private readonly CustomisingLoggingCallback _callback = new CustomisingLoggingCallback();
+      private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
       public retry_event_is_extensible()
       {
@@ -32,7 +32,7 @@
       {
          var lastRequest = _callback.RetryAttempts.Last();
          lastRequest.Tags.Count.ShouldBe(1);
-         lastRequest.Tags["Key"].ShouldBe("RetryAttempt");
+         lastRequest.Tags["Key"].ShouldBe("HttpClientRetryAttempt");
       }
    }
 }

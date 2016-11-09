@@ -8,7 +8,7 @@
    public class get_throws_exception
    {
       private readonly Exception _exceptionThrown;
-      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
+      private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly Exception _exception;
 
       public get_throws_exception()

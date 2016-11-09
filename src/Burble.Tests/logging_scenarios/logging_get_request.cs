@@ -15,7 +15,7 @@
 
    public class logging_get_request
    {
-      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
+      private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly HttpResponseMessage _response;
 
       public logging_get_request()

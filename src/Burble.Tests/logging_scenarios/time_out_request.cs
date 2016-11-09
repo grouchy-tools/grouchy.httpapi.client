@@ -17,7 +17,7 @@
 
    public class time_out_request
    {
-      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
+      private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly Exception _timeoutException;
 
       public time_out_request()

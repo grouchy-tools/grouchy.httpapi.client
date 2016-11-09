@@ -16,7 +16,7 @@
    {
       private const int ExpectedRetries = 3;
 
-      private readonly StubLoggingCallback _callback = new StubLoggingCallback();
+      private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly HttpResponseMessage _response;
 
       public multiple_retry_without_timeout()
@@ -36,7 +36,7 @@
       [Test]
       public void should_log_three_attempts()
       {
-         _callback.RetryAttempts.Count.ShouldBe(ExpectedRetries);
+         _callback.RetryAttempts.Length.ShouldBe(ExpectedRetries);
          _callback.RetryAttempts[0].Attempt.ShouldBe(1);
          _callback.RetryAttempts[1].Attempt.ShouldBe(2);
          _callback.RetryAttempts[2].Attempt.ShouldBe(3);

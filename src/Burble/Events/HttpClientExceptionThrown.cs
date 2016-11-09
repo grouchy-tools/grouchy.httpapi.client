@@ -4,9 +4,9 @@
    using System.Collections.Generic;
    using System.Net.Http;
 
-   public class HttpClientExceptionThrown
+   public class HttpClientExceptionThrown : IHttpClientEvent
    {
-      public string EventType => GetType().Name;
+      public string EventType => nameof(HttpClientExceptionThrown);
 
       public DateTimeOffset Timestamp { get; set; }
 
@@ -14,11 +14,11 @@
 
       public string Method { get; set; }
 
+      public IDictionary<string, object> Tags { get; set; }
+
       public long DurationMs { get; set; }
 
       public Exception Exception { get; set; }
-
-      public IDictionary<string, object> Tags { get; set; }
 
       public static HttpClientExceptionThrown Create(HttpRequestMessage request, long durationMs, Exception exception)
       {

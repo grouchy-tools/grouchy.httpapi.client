@@ -1,4 +1,4 @@
-﻿namespace Burble.Tests.logging_scenarios
+namespace Burble.Tests.logging_scenarios
 {
    using System.Linq;
    using System.Net;
@@ -15,7 +15,7 @@
 
    public class request_and_response_events_are_extensible
    {
-      private readonly CustomisingLoggingCallback _callback = new CustomisingLoggingCallback();
+      private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
       public request_and_response_events_are_extensible()
       {
@@ -33,7 +33,7 @@
       {
          var lastRequest = _callback.RequestsInitiated.Last();
          lastRequest.Tags.Count.ShouldBe(1);
-         lastRequest.Tags["Key"].ShouldBe("Initiated");
+         lastRequest.Tags["Key"].ShouldBe("HttpClientRequestInitiated");
       }
 
       [Test]
@@ -41,7 +41,7 @@
       {
          var lastResponse = _callback.ResponsesReceived.Last();
          lastResponse.Tags.Count.ShouldBe(1);
-         lastResponse.Tags["Key"].ShouldBe("Received");
+         lastResponse.Tags["Key"].ShouldBe("HttpClientResponseReceived");
       }
 
       private class PingWebApi : StubWebApiHost

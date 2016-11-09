@@ -16,7 +16,7 @@
 
    public class timeout_event_is_extensible
    {
-      private readonly CustomisingLoggingCallback _callback = new CustomisingLoggingCallback();
+      private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
       public timeout_event_is_extensible()
       {
@@ -41,7 +41,7 @@
       {
          var lastRequest = _callback.TimeOuts.Last();
          lastRequest.Tags.Count.ShouldBe(1);
-         lastRequest.Tags["Key"].ShouldBe("TimedOut");
+         lastRequest.Tags["Key"].ShouldBe("HttpClientTimedOut");
       }
 
       private class PingWebApi : StubWebApiHost

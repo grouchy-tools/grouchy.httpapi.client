@@ -3,8 +3,7 @@
    using System.Net.Http;
    using System.Threading.Tasks;
    using Burble.Abstractions;
-   using Burble.Logging;
-   using Burble.Retrying;
+   using Burble.Events;
 
    public static class HttpContextExtensions
    {
@@ -19,7 +18,7 @@
 
       public static IHttpClient AddLogging(
          this HttpClient baseHttpClient,
-         ILoggingCallback callback)
+         IHttpClientEventCallback callback)
       {
          return new LoggingHttpClient(
             new SimpleHttpClient(baseHttpClient),
@@ -28,7 +27,7 @@
 
       public static IHttpClient AddLogging(
          this IHttpClient httpClient,
-         ILoggingCallback callback)
+         IHttpClientEventCallback callback)
       {
          return new LoggingHttpClient(
             httpClient,
@@ -46,7 +45,7 @@
          this HttpClient baseHttpClient,
          IRetryPredicate retryPredicate,
          IRetryDelay retryDelay,
-         IRetryingCallback callback)
+         IHttpClientEventCallback callback)
       {
          return new RetryingHttpClient(
             new SimpleHttpClient(baseHttpClient),
@@ -59,7 +58,7 @@
          this IHttpClient httpClient,
          IRetryPredicate retryPredicate,
          IRetryDelay retryDelay,
-         IRetryingCallback callback)
+         IHttpClientEventCallback callback)
       {
          return new RetryingHttpClient(
             httpClient,

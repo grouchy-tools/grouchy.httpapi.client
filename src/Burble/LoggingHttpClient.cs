@@ -7,16 +7,15 @@
    using Burble.Abstractions;
    using Burble.Events;
    using Burble.Exceptions;
-   using Burble.Logging;
 
    public class LoggingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;
-      private readonly ILoggingCallback _callback;
+      private readonly IHttpClientEventCallback _callback;
 
       public LoggingHttpClient(
          IHttpClient httpClient,
-         ILoggingCallback callback)
+         IHttpClientEventCallback callback)
       {
          _httpClient = httpClient;
          _callback = callback;
@@ -28,19 +27,20 @@
 
          try
          {
-            _callback.OnInitiated(HttpClientRequestInitiated.Create(request));
+            _callback.Invoke(HttpClientRequestInitiated.Create(request));
             var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-            _callback.OnReceived(HttpClientResponseReceived.Create(response, stopwatch.ElapsedMilliseconds));
+            _callback.Invoke(HttpClientResponseReceived.Create(response, stopwatch.ElapsedMilliseconds));
+
             return response;
          }
          catch (HttpClientTimeoutException)
          {
-            _callback.OnTimeout(HttpClientTimedOut.Create(request, stopwatch.ElapsedMilliseconds));
+            _callback.Invoke(HttpClientTimedOut.Create(request, stopwatch.ElapsedMilliseconds));
             throw;
          }
          catch (Exception e)
          {
-            _callback.OnException(HttpClientExceptionThrown.Create(request, stopwatch.ElapsedMilliseconds, e));
+            _callback.Invoke(HttpClientExceptionThrown.Create(request, stopwatch.ElapsedMilliseconds, e));
             throw;
          }
       }

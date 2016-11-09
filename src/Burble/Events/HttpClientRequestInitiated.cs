@@ -4,9 +4,9 @@
    using System.Collections.Generic;
    using System.Net.Http;
 
-   public class HttpClientRequestInitiated
+   public class HttpClientRequestInitiated : IHttpClientEvent
    {
-      public string EventType => GetType().Name;
+      public string EventType => nameof(HttpClientRequestInitiated);
 
       public DateTimeOffset Timestamp { get; set; }
 
