@@ -2,6 +2,7 @@
 {
    using System.Collections.Generic;
    using System.Linq;
+   using Burble.Abstractions;
    using Burble.Events;
 
    public class StubHttpClientEventCallback : IHttpClientEventCallback

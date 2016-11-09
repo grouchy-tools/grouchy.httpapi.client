@@ -3,6 +3,7 @@
    using System;
    using System.Collections.Generic;
    using System.Net.Http;
+   using Burble.Abstractions;
 
    public class HttpClientTimedOut : IHttpClientEvent
    {

@@ -1,7 +1,7 @@
 namespace Burble.Tests
 {
    using System.Collections.Generic;
-   using Burble.Events;
+   using Burble.Abstractions;
 
    public class CustomisingHttpClientEventCallback : StubHttpClientEventCallback
    {
