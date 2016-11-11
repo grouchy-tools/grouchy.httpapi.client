@@ -9,6 +9,8 @@
    {
       public string EventType => nameof(HttpClientResponseReceived);
 
+      public string RequestId { get; set; }
+
       public DateTimeOffset Timestamp { get; set; }
 
       public string Uri { get; set; }
@@ -21,10 +23,11 @@
 
       public int StatusCode { get; set; }
 
-      public static HttpClientResponseReceived Create(HttpResponseMessage response, long durationMs)
+      public static HttpClientResponseReceived Create(string requestId, HttpResponseMessage response, long durationMs)
       {
          return new HttpClientResponseReceived
          {
+            RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
             Uri = response.RequestMessage.RequestUri.LocalPath,
             Method = response.RequestMessage.Method.Method,

@@ -17,19 +17,25 @@
 
    public class time_out_request
    {
+      private readonly string _existingRequestId;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly Exception _timeoutException;
 
       public time_out_request()
       {
+         _existingRequestId = Guid.NewGuid().ToString();
+
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient {BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50)})
          {
             var httpClient = baseHttpClient.AddLogging(_callback);
 
+            var message = new HttpRequestMessage(HttpMethod.Get, "/ping");
+            message.Headers.Add("request-id", _existingRequestId);
+
             try
             {
-               httpClient.GetAsync("/ping").Wait();
+               httpClient.SendAsync(message).Wait();
             }
             catch (Exception e)
             {
@@ -62,6 +68,14 @@
          lastTimeout.EventType.ShouldBe("HttpClientTimedOut");
          lastTimeout.Uri.ShouldBe("/ping");
          lastTimeout.Method.ShouldBe("GET");
+      }
+
+      [Test]
+      public void should_log_timeout_with_matching_request_id()
+      {
+         var lastTimeout = _callback.TimeOuts.Last();
+
+         lastTimeout.RequestId.ShouldBe(_existingRequestId);
       }
 
       [Test]

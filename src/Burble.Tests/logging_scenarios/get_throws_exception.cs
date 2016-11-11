@@ -2,24 +2,31 @@
 {
    using System;
    using System.Linq;
+   using System.Net.Http;
    using NUnit.Framework;
    using Shouldly;
 
    public class get_throws_exception
    {
+      private readonly string _existingRequestId;
       private readonly Exception _exceptionThrown;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly Exception _exception;
 
       public get_throws_exception()
       {
+         _existingRequestId = Guid.NewGuid().ToString();
+
          _exceptionThrown = new Exception();
          var baseHttpClient = new ExceptionHttpClient(_exceptionThrown);
          var httpClient = baseHttpClient.AddLogging(_callback);
 
+         var message = new HttpRequestMessage(HttpMethod.Get, "/ping");
+         message.Headers.Add("request-id", _existingRequestId);
+
          try
          {
-            httpClient.GetAsync("/ping").Wait();
+            httpClient.SendAsync(message).Wait();
          }
          catch (Exception e)
          {
@@ -58,6 +65,14 @@
          lastException.Uri.ShouldBe("/ping");
          lastException.Method.ShouldBe("GET");
          lastException.Exception.ShouldBeSameAs(_exceptionThrown);
+      }
+
+      [Test]
+      public void should_log_exception_with_matching_request_id()
+      {
+         var lastException = _callback.ExceptionsThrown.Last();
+
+         lastException.RequestId.ShouldBe(_existingRequestId);
       }
 
       [Test]

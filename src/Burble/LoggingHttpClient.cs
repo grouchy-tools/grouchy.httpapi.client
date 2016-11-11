@@ -23,24 +23,25 @@
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {
+         var requestId = request.EnsureRequestIdIsInHeaders();
          var stopwatch = Stopwatch.StartNew();
 
          try
          {
-            _callback.Invoke(HttpClientRequestInitiated.Create(request));
+            _callback.Invoke(HttpClientRequestInitiated.Create(requestId, request));
             var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-            _callback.Invoke(HttpClientResponseReceived.Create(response, stopwatch.ElapsedMilliseconds));
+            _callback.Invoke(HttpClientResponseReceived.Create(requestId, response, stopwatch.ElapsedMilliseconds));
 
             return response;
          }
          catch (HttpClientTimeoutException)
          {
-            _callback.Invoke(HttpClientTimedOut.Create(request, stopwatch.ElapsedMilliseconds));
+            _callback.Invoke(HttpClientTimedOut.Create(requestId, request, stopwatch.ElapsedMilliseconds));
             throw;
          }
          catch (Exception e)
          {
-            _callback.Invoke(HttpClientExceptionThrown.Create(request, stopwatch.ElapsedMilliseconds, e));
+            _callback.Invoke(HttpClientExceptionThrown.Create(requestId, request, stopwatch.ElapsedMilliseconds, e));
             throw;
          }
       }

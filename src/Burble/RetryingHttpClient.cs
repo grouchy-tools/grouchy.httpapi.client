@@ -28,6 +28,7 @@
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {
+         var requestId = request.EnsureRequestIdIsInHeaders();
          var retryAttempts = 0;
 
          try
@@ -62,7 +63,7 @@
                var delayMs = _retryDelay.DelayMs(retryAttempts);
                await Task.Delay(delayMs).ConfigureAwait(false);
 
-               _callback.Invoke(HttpClientRetryAttempt.Create(request, retryAttempts));
+               _callback.Invoke(HttpClientRetryAttempt.Create(requestId, request, retryAttempts));
             }
          }
          finally 

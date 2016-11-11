@@ -9,6 +9,8 @@
    {
       public string EventType => nameof(HttpClientRetryAttempt);
 
+      public string RequestId { get; set; }
+
       public DateTimeOffset Timestamp { get; set; }
 
       public string Uri { get; set; }
@@ -19,10 +21,11 @@
 
       public int Attempt { get; set; }
 
-      public static HttpClientRetryAttempt Create(HttpRequestMessage request, int attempt)
+      public static HttpClientRetryAttempt Create(string requestId, HttpRequestMessage request, int attempt)
       {
          return new HttpClientRetryAttempt
          {
+            RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
             Uri = request.RequestUri.ToString(),
             Method = request.Method.Method,

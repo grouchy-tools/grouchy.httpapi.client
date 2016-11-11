@@ -1,6 +1,7 @@
 ﻿namespace Burble.Tests.retrying_scenarios
 {
    using System;
+   using System.Linq;
    using System.Net;
    using System.Net.Http;
    using System.Threading.Tasks;
@@ -18,22 +19,28 @@
    {
       private const int ExpectedRetries = 3;
 
+      private readonly string _existingRequestId;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly Exception _exception;
 
       public multiple_retry_with_timeout()
       {
+         _existingRequestId = Guid.NewGuid().ToString();
+
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient {BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(10)})
+         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(10) })
          {
             var httpClient = baseHttpClient.AddRetrying(
                new StubRetryPredicate(ExpectedRetries),
                new StubRetryDelay(10),
                _callback);
 
+            var message = new HttpRequestMessage(HttpMethod.Get, "/ping");
+            message.Headers.Add("request-id", _existingRequestId);
+
             try
             {
-               httpClient.GetAsync("/ping").Wait();
+               httpClient.SendAsync(message).Wait();
             }
             catch (Exception e)
             {
@@ -57,6 +64,14 @@
          _callback.RetryAttempts[0].EventType.ShouldBe("HttpClientRetryAttempt");
          _callback.RetryAttempts[0].Uri.ShouldBe("/ping");
          _callback.RetryAttempts[0].Method.ShouldBe("GET");
+      }
+      
+      [Test]
+      public void should_log_all_retry_attempts_with_matching_request_id()
+      {
+         _callback.RetryAttempts[0].RequestId.ShouldBe(_existingRequestId);
+         _callback.RetryAttempts[1].RequestId.ShouldBe(_existingRequestId);
+         _callback.RetryAttempts[2].RequestId.ShouldBe(_existingRequestId);
       }
 
       [Test]

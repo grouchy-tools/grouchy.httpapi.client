@@ -9,6 +9,8 @@
    {
       public string EventType => nameof(HttpClientExceptionThrown);
 
+      public string RequestId { get; set; }
+
       public DateTimeOffset Timestamp { get; set; }
 
       public string Uri { get; set; }
@@ -21,10 +23,11 @@
 
       public Exception Exception { get; set; }
 
-      public static HttpClientExceptionThrown Create(HttpRequestMessage request, long durationMs, Exception exception)
+      public static HttpClientExceptionThrown Create(string requestId, HttpRequestMessage request, long durationMs, Exception exception)
       {
          return new HttpClientExceptionThrown
          {
+            RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
             Method = request.Method.Method,
             Uri = request.RequestUri.ToString(),

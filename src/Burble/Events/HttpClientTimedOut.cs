@@ -9,6 +9,8 @@
    {
       public string EventType => nameof(HttpClientTimedOut);
 
+      public string RequestId { get; set; }
+
       public DateTimeOffset Timestamp { get; set; }
 
       public string Uri { get; set; }
@@ -19,10 +21,11 @@
 
       public long DurationMs { get; set; }
 
-      public static HttpClientTimedOut Create(HttpRequestMessage request, long durationMs)
+      public static HttpClientTimedOut Create(string requestId, HttpRequestMessage request, long durationMs)
       {
          return new HttpClientTimedOut
          {
+            RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
             Uri = request.RequestUri.LocalPath,
             Method = request.Method.Method,
