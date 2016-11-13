@@ -13,7 +13,7 @@
     - ps: Import-Module .\build\psake.psm1
     - ps: $env:VERSION_SUFFIX = 'preview' + "$env:APPVEYOR_BUILD_NUMBER".PadLeft(4, "0")
   build_script:
-    - ps: Invoke-Psake .\build\build.ps1 -properties @{"Configuration"=$env:CONFIGURATION;"VersionSuffix"=$env:VERSION_SUFFIX}; if ($psake.build_success -eq $false) { exit 1 } else { exit 0 }
+    - ps: "Invoke-Psake .\build\build.ps1 -properties @{"Configuration"=$env:CONFIGURATION;"VersionSuffix"=$env:VERSION_SUFFIX}; if ($psake.build_success -eq $false) { exit 1 } else { exit 0 }"
   test: off
   artifacts:
     - path: 'artifacts\*.nupkg'
@@ -36,7 +36,7 @@
   before_build:
     - ps: Import-Module .\build\psake.psm1
   build_script:
-    - ps: Invoke-Psake .\build\build.ps1 -properties @{"Configuration"=$env:CONFIGURATION}; if ($psake.build_success -eq $false) { exit 1 } else { exit 0 }
+    - ps: "Invoke-Psake .\build\build.ps1 -properties @{"Configuration"=$env:CONFIGURATION}; if ($psake.build_success -eq $false) { exit 1 } else { exit 0 }"
   test: off
   artifacts:
     - path: 'artifacts\*.nupkg'
