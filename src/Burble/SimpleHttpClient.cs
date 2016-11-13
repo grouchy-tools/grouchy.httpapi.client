@@ -28,7 +28,7 @@
          }
          catch (Exception e)
          {
-            throw new HttpClientException(e) { RequestUri = request.RequestUri };
+            throw new HttpClientException(request, e);
          }
       }
    }

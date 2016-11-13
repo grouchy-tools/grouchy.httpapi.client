@@ -49,6 +49,7 @@
 
          httpClientException.InnerException.ShouldNotBeNull();         
          httpClientException.RequestUri.ShouldBe(new Uri("http://fail/ping"));         
+         httpClientException.Message.ShouldBe("An error occurred invoking GET http://fail/ping");
       }
    }
 }
