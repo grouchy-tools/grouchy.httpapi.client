@@ -17,20 +17,18 @@
    "frameworks": {
       "netstandard1.6": {
          "dependencies": {
+            "System.Linq": "4.1.0",
             "System.Net.Http": "4.1.0",
             "System.Runtime": "4.1.0",
             "System.Runtime.Extensions": "4.1.0",
-            "System.Linq": "4.1.0",
-            "System.Threading":  "4.0.11" 
+            "System.Threading": "4.0.11"
          }
       },
       "net451": {
-         "dependencies": {
-         },
          "frameworkAssemblies": {
-            "System.Threading.Tasks": "",
+            "System.Linq": "",
             "System.Net.Http": "",
-            "System.Linq": ""
+            "System.Threading.Tasks": ""
          }
       }
    }
