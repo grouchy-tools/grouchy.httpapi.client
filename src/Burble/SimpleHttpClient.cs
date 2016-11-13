@@ -26,7 +26,7 @@
          {
             throw new HttpClientTimeoutException(request);
          }
-         catch (HttpRequestException e) when (e.InnerException.Message == "The server name or address could not be resolved")
+         catch (HttpRequestException e) when (IsServerUnavailable(e))
          {
             throw new HttpClientServerUnavailableException(request);
          }
@@ -34,6 +34,15 @@
          {
             throw new HttpClientException(request, e);
          }
+      }
+
+      private static bool IsServerUnavailable(HttpRequestException e)
+      {
+#if NET451
+         return e.InnerException.Message.StartsWith("The remote name could not be resolved: ");
+#else
+         return e.InnerException.Message == "The server name or address could not be resolved";
+#endif
       }
    }
 }
