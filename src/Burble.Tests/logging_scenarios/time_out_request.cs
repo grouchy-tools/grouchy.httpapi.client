@@ -26,7 +26,7 @@
          _existingRequestId = Guid.NewGuid().ToString();
 
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient {BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50)})
+         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50) })
          {
             var httpClient = baseHttpClient.AddLogging(_callback);
 
@@ -43,7 +43,7 @@
             }
          }
       }
-      
+
       [Test]
       public void should_log_request_initiated()
       {

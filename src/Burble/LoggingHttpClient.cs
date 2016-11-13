@@ -39,6 +39,11 @@
             _callback.Invoke(HttpClientTimedOut.Create(requestId, request, stopwatch.ElapsedMilliseconds));
             throw;
          }
+         catch (HttpClientServerUnavailableException)
+         {
+            _callback.Invoke(HttpClientServerUnavailable.Create(requestId, request, stopwatch.ElapsedMilliseconds));
+            throw;
+         }
          catch (Exception e)
          {
             _callback.Invoke(HttpClientExceptionThrown.Create(requestId, request, stopwatch.ElapsedMilliseconds, e));

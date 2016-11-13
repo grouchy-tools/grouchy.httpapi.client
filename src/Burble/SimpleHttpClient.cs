@@ -24,7 +24,11 @@
          }
          catch (TaskCanceledException)
          {
-            throw new HttpClientTimeoutException();
+            throw new HttpClientTimeoutException(request);
+         }
+         catch (HttpRequestException e) when (e.InnerException.Message == "The server name or address could not be resolved")
+         {
+            throw new HttpClientServerUnavailableException(request);
          }
          catch (Exception e)
          {

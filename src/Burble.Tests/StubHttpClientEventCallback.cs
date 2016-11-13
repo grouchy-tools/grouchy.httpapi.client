@@ -4,6 +4,7 @@
    using System.Linq;
    using Burble.Abstractions;
    using Burble.Events;
+   using Burble.Exceptions;
 
    public class StubHttpClientEventCallback : IHttpClientEventCallback
    {
@@ -12,6 +13,8 @@
       public HttpClientRequestInitiated[] RequestsInitiated => Events.OfType<HttpClientRequestInitiated>().ToArray();
 
       public HttpClientResponseReceived[] ResponsesReceived => Events.OfType<HttpClientResponseReceived>().ToArray();
+
+      public HttpClientServerUnavailable[] ServersUnavailable => Events.OfType<HttpClientServerUnavailable>().ToArray();
 
       public HttpClientExceptionThrown[] ExceptionsThrown => Events.OfType<HttpClientExceptionThrown>().ToArray();
 

@@ -6,7 +6,7 @@
    public class HttpClientException : Exception
    {
       public HttpClientException(HttpRequestMessage request, Exception innerException)
-         : base($"An error occurred invoking {request.Method} {request.RequestUri}", innerException)
+         : base($"Unexpected exception, {request.Method} {request.RequestUri}", innerException)
       {
          RequestUri = request.RequestUri;
       }

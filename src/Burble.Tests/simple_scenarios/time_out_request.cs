@@ -17,12 +17,15 @@
    public class time_out_request
    {
       private readonly Exception _timeoutException;
+      private readonly Uri _exceptionUrl;
 
       public time_out_request()
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50) })
          {
+            _exceptionUrl = new Uri(webApi.BaseUri, "/ping");
+
             var httpClient = new SimpleHttpClient(baseHttpClient);
 
             try
@@ -43,6 +46,16 @@
 
          var innerException = _timeoutException.InnerException;
          innerException.ShouldBeOfType<HttpClientTimeoutException>();
+      }
+
+      [Test]
+      public void should_populate_http_client_timeout_exception()
+      {
+         var timeoutException = (HttpClientTimeoutException)_timeoutException.InnerException;
+
+         timeoutException.InnerException.ShouldBeNull();
+         timeoutException.RequestUri.ShouldBe(_exceptionUrl);
+         timeoutException.Message.ShouldBe($"Request timed-out, GET {_exceptionUrl}");
       }
 
       private class PingWebApi : StubWebApiHost
