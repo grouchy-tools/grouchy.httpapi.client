@@ -14,8 +14,8 @@
 
    [TestFixture("GET", "http://fail", "/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping")]
    [TestFixture("GET", null, "http://fail/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping")]
-   [TestFixture("HEAD", "http://fail", "/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping")]
-   [TestFixture("HEAD", null, "http://fail/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping")]
+   [TestFixture("HEAD", "http://fail", "/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping")]
+   [TestFixture("HEAD", null, "http://fail/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping")]
    public class get_server_not_found
    {
       private readonly string _exceptionUrl;
