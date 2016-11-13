@@ -15,7 +15,7 @@
   build_script:
     - ps: |
         Invoke-Psake .\build\build.ps1 -properties @{"Configuration"=$env:CONFIGURATION;"VersionSuffix"=$env:VERSION_SUFFIX}
-        if ($psake.build_success -eq $false) { exit 1 } else { exit 0 }
+        if ($psake.build_success -eq $false) { exit 1 }
   test: off
   artifacts:
     - path: 'artifacts\*.nupkg'
@@ -40,7 +40,7 @@
   build_script:
     - ps: |
         Invoke-Psake .\build\build.ps1 -properties @{"Configuration"=$env:CONFIGURATION}
-        if ($psake.build_success -eq $false) { exit 1 } else { exit 0 }
+        if ($psake.build_success -eq $false) { exit 1 }
   test: off
   artifacts:
     - path: 'artifacts\*.nupkg'
