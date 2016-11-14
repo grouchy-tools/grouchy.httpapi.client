@@ -39,9 +39,12 @@
       private static bool IsServerUnavailable(HttpRequestException e)
       {
 #if NET451
-         return e.InnerException.Message.StartsWith("The remote name could not be resolved: ");
+         return e.InnerException.Message.StartsWith("The remote name could not be resolved: ") ||
+            e.InnerException.Message == "Unable to connect to the remote server";
 #else
-         return e.InnerException.Message == "The server name or address could not be resolved";
+         return e.InnerException.Message == "The server name or address could not be resolved" ||
+            e.InnerException.Message == "The connection with the server was terminated abnormally" ||
+            e.InnerException.Message == "A connection with the server could not be established";
 #endif
       }
    }

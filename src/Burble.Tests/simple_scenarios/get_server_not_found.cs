@@ -16,6 +16,7 @@
    [TestFixture("GET", null, "http://fail/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping")]
    [TestFixture("HEAD", "http://fail", "/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping")]
    [TestFixture("HEAD", null, "http://fail/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping")]
+   [TestFixture("GET", "http://localhost:9010", "/status", "http://localhost:9010/status", "Server unavailable, GET http://localhost:9010/status")]
    public class get_server_not_found
    {
       private readonly string _exceptionUrl;
@@ -53,13 +54,20 @@
       }
 
       [Test]
-      public void should_populate_http_client_exception()
+      public void should_populate_http_client_exception_message()
+      {
+         var httpClientConnectionException = _requestException.InnerException;
+
+         httpClientConnectionException.InnerException.ShouldBeNull();
+         httpClientConnectionException.Message.ShouldBe(_exceptionMessage);
+      }
+
+      [Test]
+      public void should_populate_http_client_exception_request_id()
       {
          var httpClientConnectionException = (HttpClientServerUnavailableException)_requestException.InnerException;
 
-         httpClientConnectionException.InnerException.ShouldBeNull();
          httpClientConnectionException.RequestUri.ShouldBe(new Uri(_exceptionUrl));         
-         httpClientConnectionException.Message.ShouldBe(_exceptionMessage);
       }
    }
 }
