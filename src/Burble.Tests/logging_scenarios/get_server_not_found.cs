@@ -1,32 +1,38 @@
-﻿namespace Burble.Tests.simple_scenarios
+﻿namespace Burble.Tests.logging_scenarios
 {
    using System;
+   using System.Linq;
    using System.Net.Http;
    using Banshee;
    using Burble.Exceptions;
    using NUnit.Framework;
    using Shouldly;
 
-   [TestFixture("GET", "http://fail", "/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping")]
-   [TestFixture("GET", null, "http://fail/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping")]
-   [TestFixture("HEAD", "http://fail", "/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping")]
-   [TestFixture("HEAD", null, "http://fail/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping")]
-   [TestFixture("GET", "http://localhost:9010", "/status", "http://localhost:9010/status", "Server unavailable, GET http://localhost:9010/status")]
+   [TestFixture("GET", "http://fail", "/ping", "/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping")]
+   [TestFixture("GET", null, "http://fail/ping", "/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping")]
+   [TestFixture("HEAD", "http://fail", "/ping", "/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping")]
+   [TestFixture("HEAD", null, "http://fail/ping", "/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping")]
+   [TestFixture("GET", "http://localhost:9010", "/status", "/status", "http://localhost:9010/status", "Server unavailable, GET http://localhost:9010/status")]
    public class get_server_not_found
    {
+      private readonly string _method;
+      private readonly string _eventUri;
       private readonly string _exceptionUrl;
       private readonly string _exceptionMessage;
+      private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly Exception _requestException;
 
-      public get_server_not_found(string method, string baseAddress, string url, string exceptionUrl, string exceptionMessage)
+      public get_server_not_found(string method, string baseAddress, string url, string eventUri, string exceptionUrl, string exceptionMessage)
       {
+         _method = method;
+         _eventUri = eventUri;
          _exceptionUrl = exceptionUrl;
          _exceptionMessage = exceptionMessage;
 
          using (new StubWebApiHost())
          using (var baseHttpClient = new HttpClient { BaseAddress = baseAddress != null ? new Uri(baseAddress) : null })
          {
-            var httpClient = new SimpleHttpClient(baseHttpClient);
+            var httpClient = baseHttpClient.AddLogging(_callback);
             var message = new HttpRequestMessage(new HttpMethod(method), url);
 
             try
@@ -63,6 +69,22 @@
          var httpClientConnectionException = (HttpClientServerUnavailableException)_requestException.InnerException;
 
          httpClientConnectionException.RequestUri.ShouldBe(new Uri(_exceptionUrl));         
+      }
+
+      [Test]
+      public void should_not_log_exception_thrown()
+      {
+         _callback.ExceptionsThrown.ShouldBeEmpty();
+      }
+
+      [Test]
+      public void should_log_server_unavailable()
+      {
+         var lastException = _callback.ServersUnavailable.Last();
+         lastException.ShouldNotBeNull();
+         lastException.EventType.ShouldBe("HttpClientServerUnavailable");
+         lastException.Uri.ShouldBe(_eventUri);
+         lastException.Method.ShouldBe(_method);
       }
    }
 }

@@ -29,7 +29,7 @@
          {
             RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
-            Uri = response.RequestMessage.RequestUri.LocalPath,
+            Uri = response.RequestMessage.LocalRequestUri(),
             Method = response.RequestMessage.Method.Method,
             DurationMs = durationMs,
             StatusCode = (int)response.StatusCode

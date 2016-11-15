@@ -6,7 +6,7 @@
    using System.Net.Http;
 
    public static class HttpRequestMessageExtensions
-    {
+   {
       public static string EnsureRequestIdIsInHeaders(this HttpRequestMessage request)
       {
          IEnumerable<string> values;
@@ -19,6 +19,23 @@
          request.Headers.Add("request-id", requestId);
 
          return requestId;
+      }
+
+      public static string LocalRequestUri(this HttpRequestMessage request)
+      {
+         if (request.RequestUri.IsAbsoluteUri)
+         {
+            return request.RequestUri.LocalPath;
+         }
+
+         var uri = request.RequestUri.OriginalString;
+
+         if (uri.StartsWith("/"))
+         {
+            return uri;
+         }
+
+         return "/" + uri;
       }
    }
 }

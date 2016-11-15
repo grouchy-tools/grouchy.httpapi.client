@@ -27,7 +27,7 @@
          {
             RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
-            Uri = request.RequestUri.LocalPath,
+            Uri = request.LocalRequestUri(),
             Method = request.Method.Method,
             DurationMs = durationMs
          };

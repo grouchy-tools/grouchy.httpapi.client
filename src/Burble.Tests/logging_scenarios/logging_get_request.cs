@@ -13,19 +13,23 @@
    using Microsoft.AspNetCore.Http;
 #endif
 
+   [TestFixture("ping", "/ping")]
+   [TestFixture("/ping", "/ping")]
    public class logging_get_request
    {
+      private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly HttpResponseMessage _response;
 
-      public logging_get_request()
+      public logging_get_request(string uri, string eventUri)
       {
+         _eventUri = eventUri;
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
          {
             var httpClient = baseHttpClient.AddLogging(_callback);
 
-            _response = httpClient.GetAsync("/ping").Result;
+            _response = httpClient.GetAsync(uri).Result;
          }
       }
       
@@ -49,7 +53,7 @@
          var lastRequest = _callback.RequestsInitiated.Last();
          lastRequest.ShouldNotBeNull();
          lastRequest.EventType.ShouldBe("HttpClientRequestInitiated");
-         lastRequest.Uri.ShouldBe("/ping");
+         lastRequest.Uri.ShouldBe(_eventUri);
          lastRequest.Method.ShouldBe("GET");
       }
 
@@ -59,7 +63,7 @@
          var lastResponse = _callback.ResponsesReceived.Last();
          lastResponse.ShouldNotBeNull();
          lastResponse.EventType.ShouldBe("HttpClientResponseReceived");
-         lastResponse.Uri.ShouldBe("/ping");
+         lastResponse.Uri.ShouldBe(_eventUri);
          lastResponse.Method.ShouldBe("GET");
          lastResponse.StatusCode.ShouldBe(200);
       }
