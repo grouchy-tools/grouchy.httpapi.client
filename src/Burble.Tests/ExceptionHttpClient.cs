@@ -14,6 +14,8 @@
          _exception = exception;
       }
 
+      public Uri BaseAddress { get; } = new Uri("http://exception-host");
+
       public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {
          throw _exception;

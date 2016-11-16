@@ -18,7 +18,7 @@
       {
          _existingRequestId = Guid.NewGuid().ToString();
 
-         _exceptionThrown = new HttpClientServerUnavailableException(new HttpRequestMessage(HttpMethod.Get, "http://localhost"));
+         _exceptionThrown = new HttpClientServerUnavailableException(HttpMethod.Get, new Uri("http://localhost"));
          var baseHttpClient = new ExceptionHttpClient(_exceptionThrown);
          var httpClient = baseHttpClient.AddLogging(_callback);
 

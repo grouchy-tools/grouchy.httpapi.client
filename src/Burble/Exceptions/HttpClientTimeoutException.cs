@@ -6,11 +6,14 @@ namespace Burble.Exceptions
 
    public class HttpClientTimeoutException : Exception
    {
-      public HttpClientTimeoutException(HttpRequestMessage request)
-         : base($"Request timed-out, {request.Method} {request.RequestUri}")
+      public HttpClientTimeoutException(HttpMethod method, Uri requestUri)
+         : base($"Request timed-out, {method} {requestUri}")
       {
-         RequestUri = request.RequestUri;
+         Method = method;
+         RequestUri = requestUri;
       }
+
+      public HttpMethod Method { get; }
 
       public Uri RequestUri { get; }
    }

@@ -14,12 +14,14 @@
    [TestFixture("GET", "http://localhost:9010", "/status", "http://localhost:9010/status", "Server unavailable, GET http://localhost:9010/status")]
    public class get_server_not_found
    {
+      private readonly string _method;
       private readonly string _exceptionUrl;
       private readonly string _exceptionMessage;
       private readonly Exception _requestException;
 
       public get_server_not_found(string method, string baseAddress, string url, string exceptionUrl, string exceptionMessage)
       {
+         _method = method;
          _exceptionUrl = exceptionUrl;
          _exceptionMessage = exceptionMessage;
 
@@ -63,6 +65,7 @@
          var httpClientConnectionException = (HttpClientServerUnavailableException)_requestException.InnerException;
 
          httpClientConnectionException.RequestUri.ShouldBe(new Uri(_exceptionUrl));         
+         httpClientConnectionException.Method.ShouldBe(new HttpMethod(_method));
       }
    }
 }

@@ -26,6 +26,8 @@
          _callback = callback;
       }
 
+      public Uri BaseAddress => _httpClient.BaseAddress;
+
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {
          var requestId = request.EnsureRequestIdIsInHeaders();
@@ -66,7 +68,7 @@
                _callback.Invoke(HttpClientRetryAttempt.Create(requestId, request, retryAttempts));
             }
          }
-         finally 
+         finally
          {
             // Preserve compatibility with HttpClient.SendAsync by disposing of the original request
             request.Content?.Dispose();
@@ -76,7 +78,7 @@
       // From http://stackoverflow.com/questions/25044166/how-to-clone-a-httprequestmessage-when-the-original-request-has-content
       private static async Task<HttpRequestMessage> CloneRequestAsync(HttpRequestMessage request)
       {
-         var clone = new HttpRequestMessage(request.Method, request.RequestUri);
+         var clone = new HttpRequestMessage(request.Method, request.RequestUri) { Version = request.Version };
 
          // Copy the request's content (via a MemoryStream) into the cloned object
          var ms = new MemoryStream();
@@ -88,23 +90,23 @@
             ms.Position = 0;
             clone.Content = new StreamContent(ms);
 
-            // Copy the content headers
             if (request.Content.Headers != null)
             {
+               // Copy the content headers
                foreach (var header in request.Content.Headers)
                {
-                  clone.Content.Headers.Add(header.Key, header.Value);
+                  clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
                }
             }
          }
 
-         clone.Version = request.Version;
-
+         // Copy the properties
          foreach (var property in request.Properties)
          {
             clone.Properties.Add(property);
          }
 
+         // Copy the request headers
          foreach (var header in request.Headers)
          {
             clone.Headers.TryAddWithoutValidation(header.Key, header.Value);

@@ -5,11 +5,14 @@
 
    public class HttpClientServerUnavailableException : Exception
    {
-      public HttpClientServerUnavailableException(HttpRequestMessage request)
-         : base($"Server unavailable, {request.Method} {request.RequestUri}")
+      public HttpClientServerUnavailableException(HttpMethod method, Uri requestUri)
+         : base($"Server unavailable, {method} {requestUri}")
       {
-         RequestUri = request.RequestUri;
+         Method = method;
+         RequestUri = requestUri;
       }
+
+      public HttpMethod Method { get; }
 
       public Uri RequestUri { get; }
    }

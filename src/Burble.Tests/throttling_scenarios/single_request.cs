@@ -1,5 +1,6 @@
 ﻿namespace Burble.Tests.throttling_scenarios
 {
+   using System;
    using System.Net;
    using System.Threading.Tasks;
    using System.Net.Http;
@@ -37,6 +38,11 @@
          public StubHttpClient(HttpResponseMessage response)
          {
             _response = response;
+         }
+
+         public Uri BaseAddress
+         {
+            get { throw new NotImplementedException(); }
          }
 
          public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)

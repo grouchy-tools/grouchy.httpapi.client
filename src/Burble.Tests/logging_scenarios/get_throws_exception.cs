@@ -3,6 +3,7 @@
    using System;
    using System.Linq;
    using System.Net.Http;
+   using Burble.Exceptions;
    using NUnit.Framework;
    using Shouldly;
 
@@ -79,7 +80,18 @@
       public void should_throw_http_client_exception()
       {
          _exception.ShouldBeOfType<AggregateException>();
-         _exception.InnerException.ShouldBeSameAs(_exceptionThrown);
+         _exception.InnerException.ShouldBeOfType<HttpClientException>();
+      }
+
+      [Test]
+      public void should_populate_http_client_exception()
+      {
+         var httpClientException = (HttpClientException)_exception.InnerException;
+
+         httpClientException.InnerException.ShouldBeSameAs(_exceptionThrown);
+         httpClientException.RequestUri.ShouldBe(new Uri("http://exception-host/ping"));
+         httpClientException.Method.ShouldBe(HttpMethod.Get);
+         httpClientException.Message.ShouldBe("Unexpected exception, GET http://exception-host/ping");
       }
    }
 }

@@ -68,7 +68,8 @@
       {
          var httpClientConnectionException = (HttpClientServerUnavailableException)_requestException.InnerException;
 
-         httpClientConnectionException.RequestUri.ShouldBe(new Uri(_exceptionUrl));         
+         httpClientConnectionException.RequestUri.ShouldBe(new Uri(_exceptionUrl));
+         httpClientConnectionException.Method.ShouldBe(new HttpMethod(_method));
       }
 
       [Test]

@@ -15,8 +15,15 @@
          _baseHttpClient = baseHttpClient;
       }
 
+      public Uri BaseAddress => _baseHttpClient.BaseAddress;
+
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {
+         if (BaseAddress == null && !request.RequestUri.IsAbsoluteUri)
+         {
+            throw new ArgumentException("requestUri cannot be UriKind.Relative if BaseAddress has not been specified", nameof(request));
+         }
+
          try
          {
             var response = await _baseHttpClient.SendAsync(request).ConfigureAwait(false);
@@ -24,15 +31,11 @@
          }
          catch (TaskCanceledException)
          {
-            throw new HttpClientTimeoutException(request);
+            throw new HttpClientTimeoutException(request.Method, request.AbsoluteRequestUri(BaseAddress));
          }
          catch (HttpRequestException e) when (IsServerUnavailable(e))
          {
-            throw new HttpClientServerUnavailableException(request);
-         }
-         catch (Exception e)
-         {
-            throw new HttpClientException(request, e);
+            throw new HttpClientServerUnavailableException(request.Method, request.AbsoluteRequestUri(BaseAddress));
          }
       }
 

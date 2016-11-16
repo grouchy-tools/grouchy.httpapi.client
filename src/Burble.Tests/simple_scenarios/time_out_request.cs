@@ -55,6 +55,7 @@
 
          timeoutException.InnerException.ShouldBeNull();
          timeoutException.RequestUri.ShouldBe(_exceptionUrl);
+         timeoutException.Method.ShouldBe(HttpMethod.Get);
          timeoutException.Message.ShouldBe($"Request timed-out, GET {_exceptionUrl}");
       }
 

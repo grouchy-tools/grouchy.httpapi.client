@@ -21,18 +21,20 @@
          _callback = callback;
       }
 
+      public Uri BaseAddress => _httpClient.BaseAddress;
+
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {
          var requestId = request.EnsureRequestIdIsInHeaders();
+
+         _callback.Invoke(HttpClientRequestInitiated.Create(requestId, request));
+
          var stopwatch = Stopwatch.StartNew();
 
+         HttpResponseMessage response;
          try
          {
-            _callback.Invoke(HttpClientRequestInitiated.Create(requestId, request));
-            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-            _callback.Invoke(HttpClientResponseReceived.Create(requestId, response, stopwatch.ElapsedMilliseconds));
-
-            return response;
+            response = await _httpClient.SendAsync(request).ConfigureAwait(false);
          }
          catch (HttpClientTimeoutException)
          {
@@ -47,8 +49,12 @@
          catch (Exception e)
          {
             _callback.Invoke(HttpClientExceptionThrown.Create(requestId, request, stopwatch.ElapsedMilliseconds, e));
-            throw;
+            throw new HttpClientException(request.Method, request.AbsoluteRequestUri(BaseAddress), e);
          }
+
+         _callback.Invoke(HttpClientResponseReceived.Create(requestId, response, stopwatch.ElapsedMilliseconds));
+
+         return response;
       }
    }
 }

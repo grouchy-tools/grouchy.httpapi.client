@@ -5,11 +5,14 @@
 
    public class HttpClientException : Exception
    {
-      public HttpClientException(HttpRequestMessage request, Exception innerException)
-         : base($"Unexpected exception, {request.Method} {request.RequestUri}", innerException)
+      public HttpClientException(HttpMethod method, Uri requestUri, Exception innerException)
+         : base($"Unexpected exception, {method} {requestUri}", innerException)
       {
-         RequestUri = request.RequestUri;
+         Method = method;
+         RequestUri = requestUri;
       }
+
+      public HttpMethod Method { get; }
 
       public Uri RequestUri { get; }
    }

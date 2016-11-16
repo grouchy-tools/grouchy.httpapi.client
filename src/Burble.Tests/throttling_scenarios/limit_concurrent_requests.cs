@@ -1,5 +1,6 @@
 ﻿namespace Burble.Tests.throttling_scenarios
 {
+   using System;
    using System.Linq;
    using System.Net;
    using System.Threading.Tasks;
@@ -46,6 +47,11 @@
          public int MaxConcurrentRequests { get; private set; }
 
          public int TotalRequests { get; private set; }
+
+         public Uri BaseAddress
+         {
+            get { throw new NotImplementedException(); }
+         }
 
          public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
          {
