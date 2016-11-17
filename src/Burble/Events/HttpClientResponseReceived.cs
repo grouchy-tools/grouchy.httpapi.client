@@ -2,6 +2,7 @@
 {
    using System;
    using System.Collections.Generic;
+   using System.Net;
    using System.Net.Http;
    using Burble.Abstractions;
 
@@ -23,13 +24,13 @@
 
       public int StatusCode { get; set; }
 
-      public static HttpClientResponseReceived Create(string requestId, HttpResponseMessage response, long durationMs)
+      public static HttpClientResponseReceived Create(string requestId, HttpResponseMessage response, Uri baseAddress, long durationMs)
       {
          return new HttpClientResponseReceived
          {
             RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
-            Uri = response.RequestMessage.LocalRequestUri(),
+            Uri = response.RequestMessage.AbsoluteRequestUri(baseAddress).ToString(),
             Method = response.RequestMessage.Method.Method,
             DurationMs = durationMs,
             StatusCode = (int)response.StatusCode

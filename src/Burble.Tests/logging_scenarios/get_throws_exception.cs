@@ -41,7 +41,7 @@
          var lastRequest = _callback.RequestsInitiated.Last();
          lastRequest.ShouldNotBeNull();
          lastRequest.EventType.ShouldBe("HttpClientRequestInitiated");
-         lastRequest.Uri.ShouldBe("/ping");
+         lastRequest.Uri.ShouldBe("http://exception-host/ping");
          lastRequest.Method.ShouldBe("GET");
       }
 
@@ -63,7 +63,7 @@
          var lastException = _callback.ExceptionsThrown.Last();
          lastException.ShouldNotBeNull();
          lastException.EventType.ShouldBe("HttpClientExceptionThrown");
-         lastException.Uri.ShouldBe("/ping");
+         lastException.Uri.ShouldBe("http://exception-host/ping");
          lastException.Method.ShouldBe("GET");
          lastException.Exception.ShouldBeSameAs(_exceptionThrown);
       }

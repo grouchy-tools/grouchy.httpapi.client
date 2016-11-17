@@ -54,10 +54,7 @@
       {
          public IList<HttpRequestMessage> Requests { get; } = new List<HttpRequestMessage>();
 
-         public Uri BaseAddress
-         {
-            get {  throw new NotImplementedException(); }
-         }
+         public Uri BaseAddress => new Uri("http://stub-host");
 
          public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
          {

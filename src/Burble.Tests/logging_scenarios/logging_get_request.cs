@@ -1,5 +1,6 @@
 ﻿namespace Burble.Tests.logging_scenarios
 {
+   using System;
    using System.Linq;
    using System.Net;
    using System.Net.Http;
@@ -23,10 +24,11 @@
 
       public logging_get_request(string uri, string eventUri)
       {
-         _eventUri = eventUri;
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
          {
+            _eventUri = new Uri(webApi.BaseUri, eventUri).ToString();
+
             var httpClient = baseHttpClient.AddLogging(_callback);
 
             _response = httpClient.GetAsync(uri).Result;

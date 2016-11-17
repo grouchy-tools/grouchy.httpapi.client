@@ -1,5 +1,6 @@
 ﻿namespace Burble.Tests.retrying_scenarios
 {
+   using System;
    using System.Net;
    using System.Net.Http;
    using System.Threading.Tasks;
@@ -16,6 +17,7 @@
    {
       private const int ExpectedRetries = 3;
 
+      private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly HttpResponseMessage _response;
 
@@ -24,6 +26,8 @@
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
          {
+            _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
+
             var httpClient = baseHttpClient.AddRetrying(
                new StubRetryPredicate(ExpectedRetries),
                new StubRetryDelay(10),
@@ -46,7 +50,7 @@
       public void should_log_retry_attempt()
       {
          _callback.RetryAttempts[0].EventType.ShouldBe("HttpClientRetryAttempt");
-         _callback.RetryAttempts[0].Uri.ShouldBe("/ping");
+         _callback.RetryAttempts[0].Uri.ShouldBe(_eventUri);
          _callback.RetryAttempts[0].Method.ShouldBe("GET");
       }
 

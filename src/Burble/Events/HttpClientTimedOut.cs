@@ -21,13 +21,13 @@
 
       public long DurationMs { get; set; }
 
-      public static HttpClientTimedOut Create(string requestId, HttpRequestMessage request, long durationMs)
+      public static HttpClientTimedOut Create(string requestId, HttpRequestMessage request, Uri baseAddress, long durationMs)
       {
          return new HttpClientTimedOut
          {
             RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
-            Uri = request.LocalRequestUri(),
+            Uri = request.AbsoluteRequestUri(baseAddress).ToString(),
             Method = request.Method.Method,
             DurationMs = durationMs
          };

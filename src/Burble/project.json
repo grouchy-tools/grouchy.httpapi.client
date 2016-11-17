@@ -12,7 +12,7 @@
       }
    },
    "dependencies": {
-      "Burble.Abstractions": "0.0.10-preview0016"
+      "Burble.Abstractions": "0.0.10"
    },
    "frameworks": {
       "netstandard1.6": {

@@ -44,7 +44,7 @@
       public void should_log_retry_attempt()
       {
          _callback.RetryAttempts[0].EventType.ShouldBe("HttpClientRetryAttempt");
-         _callback.RetryAttempts[0].Uri.ShouldBe("/ping");
+         _callback.RetryAttempts[0].Uri.ShouldBe("http://exception-host/ping");
          _callback.RetryAttempts[0].Method.ShouldBe("GET");
       }
 

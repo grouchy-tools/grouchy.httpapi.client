@@ -65,7 +65,7 @@
                var delayMs = _retryDelay.DelayMs(retryAttempts);
                await Task.Delay(delayMs).ConfigureAwait(false);
 
-               _callback.Invoke(HttpClientRetryAttempt.Create(requestId, request, retryAttempts));
+               _callback.Invoke(HttpClientRetryAttempt.Create(requestId, request, BaseAddress, retryAttempts));
             }
          }
          finally

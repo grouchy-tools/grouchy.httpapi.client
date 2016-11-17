@@ -21,13 +21,13 @@
 
       public int Attempt { get; set; }
 
-      public static HttpClientRetryAttempt Create(string requestId, HttpRequestMessage request, int attempt)
+      public static HttpClientRetryAttempt Create(string requestId, HttpRequestMessage request, Uri baseAddress, int attempt)
       {
          return new HttpClientRetryAttempt
          {
             RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
-            Uri = request.LocalRequestUri(),
+            Uri = request.AbsoluteRequestUri(baseAddress).ToString(),
             Method = request.Method.Method,
             Attempt = attempt
          };

@@ -20,6 +20,7 @@
       private const int ExpectedRetries = 3;
 
       private readonly string _existingRequestId;
+      private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly Exception _exception;
 
@@ -30,6 +31,8 @@
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(10) })
          {
+            _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
+
             var httpClient = baseHttpClient.AddRetrying(
                new StubRetryPredicate(ExpectedRetries),
                new StubRetryDelay(10),
@@ -62,7 +65,7 @@
       public void should_log_retry_attempt()
       {
          _callback.RetryAttempts[0].EventType.ShouldBe("HttpClientRetryAttempt");
-         _callback.RetryAttempts[0].Uri.ShouldBe("/ping");
+         _callback.RetryAttempts[0].Uri.ShouldBe(_eventUri);
          _callback.RetryAttempts[0].Method.ShouldBe("GET");
       }
       

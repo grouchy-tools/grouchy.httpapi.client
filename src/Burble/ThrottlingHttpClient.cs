@@ -1,5 +1,6 @@
 ﻿namespace Burble
 {
+   using System;
    using System.Net.Http;
    using System.Threading.Tasks;
    using Burble.Abstractions;
@@ -16,6 +17,8 @@
          _httpClient = httpClient;
          _throttleSync = throttleSync;
       }
+
+      public Uri BaseAddress => _httpClient.BaseAddress;
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {

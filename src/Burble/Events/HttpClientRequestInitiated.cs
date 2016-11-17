@@ -19,13 +19,13 @@
 
       public IDictionary<string, object> Tags { get; set; }
 
-      public static HttpClientRequestInitiated Create(string requestId, HttpRequestMessage request)
+      public static HttpClientRequestInitiated Create(string requestId, HttpRequestMessage request, Uri baseAddress)
       {
          return new HttpClientRequestInitiated
          {
             RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
-            Uri = request.LocalRequestUri(),
+            Uri = request.AbsoluteRequestUri(baseAddress).ToString(),
             Method = request.Method.Method
          };
       }

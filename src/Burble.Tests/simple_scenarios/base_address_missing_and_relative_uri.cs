@@ -12,7 +12,6 @@
 
       public base_address_missing_and_relative_uri()
       {
-         Console.WriteLine("aarr");
          using (new StubWebApiHost())
          using (var baseHttpClient = new HttpClient())
          {

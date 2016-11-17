@@ -21,14 +21,14 @@
 
       public long DurationMs { get; set; }
 
-      public static HttpClientServerUnavailable Create(string requestId, HttpRequestMessage request, long durationMs)
+      public static HttpClientServerUnavailable Create(string requestId, HttpRequestMessage request, Uri baseAddress, long durationMs)
       {
          return new HttpClientServerUnavailable
          {
             RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
+            Uri = request.AbsoluteRequestUri(baseAddress).ToString(),
             Method = request.Method.Method,
-            Uri = request.LocalRequestUri(),
             DurationMs = durationMs
          };
       }

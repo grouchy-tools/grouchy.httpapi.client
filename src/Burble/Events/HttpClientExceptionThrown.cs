@@ -23,14 +23,14 @@
 
       public Exception Exception { get; set; }
 
-      public static HttpClientExceptionThrown Create(string requestId, HttpRequestMessage request, long durationMs, Exception exception)
+      public static HttpClientExceptionThrown Create(string requestId, HttpRequestMessage request, Uri baseAddress, long durationMs, Exception exception)
       {
          return new HttpClientExceptionThrown
          {
             RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
+            Uri = request.AbsoluteRequestUri(baseAddress).ToString(),
             Method = request.Method.Method,
-            Uri = request.LocalRequestUri(),
             DurationMs = durationMs,
             Exception = exception
          };
