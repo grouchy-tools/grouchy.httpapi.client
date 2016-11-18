@@ -9,25 +9,19 @@
 
    public class get_throws_server_unavailable_exception
    {
-      private readonly string _existingRequestId;
       private readonly HttpClientServerUnavailableException _exceptionThrown;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly Exception _exception;
 
       public get_throws_server_unavailable_exception()
       {
-         _existingRequestId = Guid.NewGuid().ToString();
-
          _exceptionThrown = new HttpClientServerUnavailableException(HttpMethod.Get, new Uri("http://localhost"));
          var baseHttpClient = new ExceptionHttpClient(_exceptionThrown);
          var httpClient = baseHttpClient.AddLogging(_callback);
 
-         var message = new HttpRequestMessage(HttpMethod.Get, "/ping");
-         message.Headers.Add("request-id", _existingRequestId);
-
          try
          {
-            httpClient.SendAsync(message).Wait();
+            httpClient.GetAsync("/ping").Wait();
          }
          catch (Exception e)
          {
@@ -72,15 +66,7 @@
          lastException.Uri.ShouldBe("http://exception-host/ping");
          lastException.Method.ShouldBe("GET");
       }
-
-      [Test]
-      public void should_log_exception_with_matching_request_id()
-      {
-         var lastException = _callback.ServersUnavailable.Last();
-
-         lastException.RequestId.ShouldBe(_existingRequestId);
-      }
-
+      
       [Test]
       public void should_throw_http_client_exception()
       {

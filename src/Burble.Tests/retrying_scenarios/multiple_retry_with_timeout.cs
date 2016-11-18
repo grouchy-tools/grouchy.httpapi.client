@@ -19,15 +19,12 @@
    {
       private const int ExpectedRetries = 3;
 
-      private readonly string _existingRequestId;
       private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly Exception _exception;
 
       public multiple_retry_with_timeout()
       {
-         _existingRequestId = Guid.NewGuid().ToString();
-
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(10) })
          {
@@ -38,12 +35,9 @@
                new StubRetryDelay(10),
                _callback);
 
-            var message = new HttpRequestMessage(HttpMethod.Get, "/ping");
-            message.Headers.Add("request-id", _existingRequestId);
-
             try
             {
-               httpClient.SendAsync(message).Wait();
+               httpClient.GetAsync("/ping").Wait();
             }
             catch (Exception e)
             {
@@ -69,14 +63,6 @@
          _callback.RetryAttempts[0].Method.ShouldBe("GET");
       }
       
-      [Test]
-      public void should_log_all_retry_attempts_with_matching_request_id()
-      {
-         _callback.RetryAttempts[0].RequestId.ShouldBe(_existingRequestId);
-         _callback.RetryAttempts[1].RequestId.ShouldBe(_existingRequestId);
-         _callback.RetryAttempts[2].RequestId.ShouldBe(_existingRequestId);
-      }
-
       [Test]
       public void should_throw_http_client_timeout_exception()
       {

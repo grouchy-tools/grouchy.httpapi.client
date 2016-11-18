@@ -1,6 +1,5 @@
 namespace Burble.Tests
 {
-   using System.Collections.Generic;
    using Burble.Abstractions;
 
    public class CustomisingHttpClientEventCallback : StubHttpClientEventCallback
@@ -8,7 +7,7 @@ namespace Burble.Tests
       public override void Invoke(IHttpClientEvent @event)
       {
          base.Invoke(@event);
-         @event.Tags = new Dictionary<string, object> { { "Key", @event.EventType } };
+         @event.Tags.Add("Key", @event.EventType);
       }
    }
 }

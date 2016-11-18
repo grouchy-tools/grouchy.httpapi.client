@@ -25,9 +25,7 @@
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
       {
-         var requestId = request.EnsureRequestIdIsInHeaders();
-
-         _callback.Invoke(HttpClientRequestInitiated.Create(requestId, request, BaseAddress));
+         _callback.Invoke(HttpClientRequestInitiated.Create(request, BaseAddress));
 
          var stopwatch = Stopwatch.StartNew();
 
@@ -38,21 +36,21 @@
          }
          catch (HttpClientTimeoutException)
          {
-            _callback.Invoke(HttpClientTimedOut.Create(requestId, request, BaseAddress, stopwatch.ElapsedMilliseconds));
+            _callback.Invoke(HttpClientTimedOut.Create(request, BaseAddress, stopwatch.ElapsedMilliseconds));
             throw;
          }
          catch (HttpClientServerUnavailableException)
          {
-            _callback.Invoke(HttpClientServerUnavailable.Create(requestId, request, BaseAddress, stopwatch.ElapsedMilliseconds));
+            _callback.Invoke(HttpClientServerUnavailable.Create(request, BaseAddress, stopwatch.ElapsedMilliseconds));
             throw;
          }
          catch (Exception e)
          {
-            _callback.Invoke(HttpClientExceptionThrown.Create(requestId, request, BaseAddress, stopwatch.ElapsedMilliseconds, e));
+            _callback.Invoke(HttpClientExceptionThrown.Create(request, BaseAddress, stopwatch.ElapsedMilliseconds, e));
             throw new HttpClientException(request.Method, request.AbsoluteRequestUri(BaseAddress), e);
          }
 
-         _callback.Invoke(HttpClientResponseReceived.Create(requestId, response, BaseAddress, stopwatch.ElapsedMilliseconds));
+         _callback.Invoke(HttpClientResponseReceived.Create(response, BaseAddress, stopwatch.ElapsedMilliseconds));
 
          return response;
       }

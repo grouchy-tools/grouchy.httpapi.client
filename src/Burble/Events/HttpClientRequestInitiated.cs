@@ -9,24 +9,23 @@
    {
       public string EventType => nameof(HttpClientRequestInitiated);
 
-      public string RequestId { get; set; }
-
       public DateTimeOffset Timestamp { get; set; }
 
       public string Uri { get; set; }
 
-      public string Method { get; set; }
+      public string Method => Request.Method.Method;
 
-      public IDictionary<string, object> Tags { get; set; }
+      public IDictionary<string, object> Tags { get; } = new Dictionary<string, object>();
 
-      public static HttpClientRequestInitiated Create(string requestId, HttpRequestMessage request, Uri baseAddress)
+      public HttpRequestMessage Request { get; set; }
+
+      public static HttpClientRequestInitiated Create(HttpRequestMessage request, Uri baseAddress)
       {
          return new HttpClientRequestInitiated
          {
-            RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
             Uri = request.AbsoluteRequestUri(baseAddress).ToString(),
-            Method = request.Method.Method
+            Request = request
          };
       }
    }

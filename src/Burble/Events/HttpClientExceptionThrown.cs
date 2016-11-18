@@ -9,28 +9,27 @@
    {
       public string EventType => nameof(HttpClientExceptionThrown);
 
-      public string RequestId { get; set; }
-
       public DateTimeOffset Timestamp { get; set; }
 
       public string Uri { get; set; }
 
-      public string Method { get; set; }
+      public string Method => Request.Method.Method;
 
-      public IDictionary<string, object> Tags { get; set; }
+      public IDictionary<string, object> Tags { get; } = new Dictionary<string, object>();
+
+      public HttpRequestMessage Request { get; set; }
 
       public long DurationMs { get; set; }
 
       public Exception Exception { get; set; }
 
-      public static HttpClientExceptionThrown Create(string requestId, HttpRequestMessage request, Uri baseAddress, long durationMs, Exception exception)
+      public static HttpClientExceptionThrown Create(HttpRequestMessage request, Uri baseAddress, long durationMs, Exception exception)
       {
          return new HttpClientExceptionThrown
          {
-            RequestId = requestId,
             Timestamp = DateTimeOffset.UtcNow,
             Uri = request.AbsoluteRequestUri(baseAddress).ToString(),
-            Method = request.Method.Method,
+            Request = request,
             DurationMs = durationMs,
             Exception = exception
          };
