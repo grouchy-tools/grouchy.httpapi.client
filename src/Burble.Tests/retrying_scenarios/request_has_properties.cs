@@ -3,6 +3,7 @@
    using System;
    using System.Collections.Generic;
    using System.Net.Http;
+   using System.Threading;
    using System.Threading.Tasks;
    using Burble.Abstractions;
    using NUnit.Framework;
@@ -57,6 +58,11 @@
          public Uri BaseAddress => new Uri("http://stub-host");
 
          public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+         {
+            return SendAsync(request, CancellationToken.None);
+         }
+
+         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
          {
             Requests.Add(request);
             throw new Exception();

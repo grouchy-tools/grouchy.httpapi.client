@@ -3,6 +3,7 @@
    using System;
    using System.Diagnostics;
    using System.Net.Http;
+   using System.Threading;
    using System.Threading.Tasks;
    using Burble.Abstractions;
    using Burble.Events;
@@ -23,7 +24,12 @@
 
       public Uri BaseAddress => _httpClient.BaseAddress;
 
-      public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      {
+         return SendAsync(request, CancellationToken.None);
+      }
+
+      public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
          _callback.Invoke(HttpClientRequestInitiated.Create(request, BaseAddress));
 
@@ -32,7 +38,7 @@
          HttpResponseMessage response;
          try
          {
-            response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+            response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
          }
          catch (HttpClientTimeoutException)
          {

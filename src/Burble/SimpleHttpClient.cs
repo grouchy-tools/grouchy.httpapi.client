@@ -2,6 +2,7 @@
 {
    using System;
    using System.Net.Http;
+   using System.Threading;
    using System.Threading.Tasks;
    using Burble.Abstractions;
    using Burble.Exceptions;
@@ -17,7 +18,12 @@
 
       public Uri BaseAddress => _baseHttpClient.BaseAddress;
 
-      public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      {
+         return SendAsync(request, CancellationToken.None);
+      }
+
+      public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
          if (BaseAddress == null && !request.RequestUri.IsAbsoluteUri)
          {
@@ -26,7 +32,7 @@
 
          try
          {
-            var response = await _baseHttpClient.SendAsync(request).ConfigureAwait(false);
+            var response = await _baseHttpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
             return response;
          }
          catch (TaskCanceledException)

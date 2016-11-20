@@ -2,6 +2,7 @@
 {
    using System;
    using System.Net.Http;
+   using System.Threading;
    using System.Threading.Tasks;
    using Burble.Abstractions;
 
@@ -17,6 +18,11 @@
       public Uri BaseAddress { get; } = new Uri("http://exception-host");
 
       public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      {
+         throw _exception;
+      }
+
+      public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
          throw _exception;
       }

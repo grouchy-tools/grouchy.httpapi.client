@@ -2,6 +2,7 @@
 {
    using System;
    using System.Net.Http;
+   using System.Threading;
    using System.Threading.Tasks;
    using Burble.Abstractions;
 
@@ -20,13 +21,18 @@
 
       public Uri BaseAddress => _httpClient.BaseAddress;
 
-      public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      {
+         return SendAsync(request, CancellationToken.None);
+      }
+
+      public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
          try
          {
             await _throttleSync.WaitAsync().ConfigureAwait(false);
 
-            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+            var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
             return response;
          }
          finally

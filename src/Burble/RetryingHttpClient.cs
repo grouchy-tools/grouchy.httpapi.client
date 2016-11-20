@@ -3,6 +3,7 @@
    using System;
    using System.IO;
    using System.Net.Http;
+   using System.Threading;
    using System.Threading.Tasks;
    using Burble.Abstractions;
    using Burble.Events;
@@ -28,7 +29,12 @@
 
       public Uri BaseAddress => _httpClient.BaseAddress;
 
-      public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+      {
+         return SendAsync(request, CancellationToken.None);
+      }
+
+      public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
          var retryAttempts = 0;
 
@@ -42,7 +48,7 @@
                try
                {
                   var clonedRequest = await CloneRequestAsync(request).ConfigureAwait(false);
-                  response = await _httpClient.SendAsync(clonedRequest).ConfigureAwait(false);
+                  response = await _httpClient.SendAsync(clonedRequest, cancellationToken).ConfigureAwait(false);
                }
                catch (Exception e)
                {
@@ -62,7 +68,7 @@
                }
 
                var delayMs = _retryDelay.DelayMs(retryAttempts);
-               await Task.Delay(delayMs).ConfigureAwait(false);
+               await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
 
                _callback.Invoke(HttpClientRetryAttempt.Create(request, BaseAddress, retryAttempts));
             }

@@ -4,6 +4,7 @@
    using System.Net;
    using System.Threading.Tasks;
    using System.Net.Http;
+   using System.Threading;
    using Burble.Abstractions;
    using Burble.Throttling;
    using NUnit.Framework;
@@ -46,6 +47,11 @@
          }
 
          public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+         {
+            return Task.FromResult(_response);
+         }
+
+         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
          {
             return Task.FromResult(_response);
          }

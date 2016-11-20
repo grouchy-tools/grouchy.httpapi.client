@@ -5,6 +5,7 @@
    using System.Net;
    using System.Threading.Tasks;
    using System.Net.Http;
+   using System.Threading;
    using Burble.Abstractions;
    using Burble.Throttling;
    using NUnit.Framework;
@@ -53,7 +54,12 @@
             get { throw new NotImplementedException(); }
          }
 
-         public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+         {
+            return SendAsync(request, CancellationToken.None);
+         }
+
+         public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
          {
             lock (_lock)
             {
@@ -62,7 +68,7 @@
                MaxConcurrentRequests = _currentRequests > MaxConcurrentRequests ? _currentRequests : MaxConcurrentRequests;
             }
 
-            await Task.Delay(10);
+            await Task.Delay(10, cancellationToken);
 
             lock (_lock)
             {
