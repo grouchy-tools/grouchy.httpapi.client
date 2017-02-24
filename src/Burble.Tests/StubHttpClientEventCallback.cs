@@ -4,7 +4,6 @@
    using System.Linq;
    using Burble.Abstractions;
    using Burble.Events;
-   using Burble.Exceptions;
 
    public class StubHttpClientEventCallback : IHttpClientEventCallback
    {

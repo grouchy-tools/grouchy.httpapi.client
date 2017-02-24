@@ -1,12 +1,11 @@
 ﻿namespace Burble.Tests.simple_scenarios
 {
    using System;
-   using System.Net;
    using System.Net.Http;
    using System.Threading;
    using System.Threading.Tasks;
    using Banshee;
-   using Burble.Exceptions;
+   using Burble.Abstractions;
    using NUnit.Framework;
    using Shouldly;
 #if NET451

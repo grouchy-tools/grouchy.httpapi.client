@@ -8,7 +8,7 @@
       "NUnit": "3.5.0",
       "Banshee": "0.0.2",
       "Shouldly": "2.8.2",
-      "dotnet-test-nunit": "3.4.0-beta-2"
+      "dotnet-test-nunit": "3.4.0-beta-3"
    },
    "frameworks": {
       "netcoreapp1.0": {

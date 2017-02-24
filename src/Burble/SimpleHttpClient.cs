@@ -5,7 +5,6 @@
    using System.Threading;
    using System.Threading.Tasks;
    using Burble.Abstractions;
-   using Burble.Exceptions;
 
    public class SimpleHttpClient : IHttpClient
    {

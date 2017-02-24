@@ -1,31 +1,10 @@
 ﻿namespace Burble
 {
    using System.Net.Http;
-   using System.Threading;
-   using System.Threading.Tasks;
    using Burble.Abstractions;
 
    public static class HttpContextExtensions
    {
-      public static Task<HttpResponseMessage> GetAsync(
-         this IHttpClient httpClient,
-         string requestUri)
-      {
-         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-
-         return httpClient.SendAsync(request);
-      }
-
-      public static Task<HttpResponseMessage> GetAsync(
-         this IHttpClient httpClient,
-         string requestUri,
-         CancellationToken cancellationToken)
-      {
-         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-
-         return httpClient.SendAsync(request, cancellationToken);
-      }
-
       public static IHttpClient AddLogging(
          this HttpClient baseHttpClient,
          IHttpClientEventCallback callback)

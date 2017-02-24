@@ -6,6 +6,7 @@
    using System.Net.Http;
    using System.Threading.Tasks;
    using Banshee;
+   using Burble.Abstractions;
    using Newtonsoft.Json;
    using Newtonsoft.Json.Linq;
    using NUnit.Framework;

@@ -2,6 +2,7 @@
 {
    using System;
    using System.Linq;
+   using Burble.Abstractions;
    using NUnit.Framework;
    using Shouldly;
 

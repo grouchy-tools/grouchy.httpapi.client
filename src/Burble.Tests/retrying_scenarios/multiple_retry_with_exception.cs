@@ -1,6 +1,7 @@
 ﻿namespace Burble.Tests.retrying_scenarios
 {
    using System;
+   using Burble.Abstractions;
    using NUnit.Framework;
    using Shouldly;
 

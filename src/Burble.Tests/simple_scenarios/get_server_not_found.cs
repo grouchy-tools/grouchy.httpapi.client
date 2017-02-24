@@ -3,7 +3,7 @@
    using System;
    using System.Net.Http;
    using Banshee;
-   using Burble.Exceptions;
+   using Burble.Abstractions;
    using NUnit.Framework;
    using Shouldly;
 

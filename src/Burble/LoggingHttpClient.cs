@@ -7,7 +7,6 @@
    using System.Threading.Tasks;
    using Burble.Abstractions;
    using Burble.Events;
-   using Burble.Exceptions;
 
    public class LoggingHttpClient : IHttpClient
    {
