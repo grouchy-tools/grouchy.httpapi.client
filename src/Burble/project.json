@@ -12,6 +12,7 @@
       }
    },
    "dependencies": {
+      "Newtonsoft.Json": "9.0.1",
       "Burble.Abstractions": "0.0.13-preview0024"
    },
    "frameworks": {
@@ -21,7 +22,8 @@
             "System.Net.Http": "4.1.0",
             "System.Runtime": "4.1.0",
             "System.Runtime.Extensions": "4.1.0",
-            "System.Threading": "4.0.11"
+            "System.Threading": "4.0.11",
+            "System.Reflection.TypeExtensions": "4.1.0"
          }
       },
       "net451": {
