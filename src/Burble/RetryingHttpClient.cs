@@ -29,11 +29,6 @@
 
       public Uri BaseAddress => _httpClient.BaseAddress;
 
-      public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
-      {
-         return SendAsync(request, CancellationToken.None);
-      }
-
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
          var retryAttempts = 0;

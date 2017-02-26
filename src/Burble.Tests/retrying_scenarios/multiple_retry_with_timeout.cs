@@ -63,12 +63,12 @@
       }
       
       [Test]
-      public void should_throw_http_client_timeout_exception()
+      public void should_throw_task_cancelled_exception()
       {
          _exception.ShouldBeOfType<AggregateException>();
 
          var innerException = _exception.InnerException;
-         innerException.ShouldBeOfType<HttpClientTimeoutException>();
+         innerException.ShouldBeOfType<TaskCanceledException>();
       }
 
       private class PingWebApi : StubWebApiHost

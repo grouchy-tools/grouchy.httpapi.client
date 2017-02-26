@@ -6,13 +6,12 @@ namespace Burble.Tests.instrumenting_scenarios
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
-   using Microsoft.AspNetCore.Http;
    using NUnit.Framework;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
-
+   using Microsoft.AspNetCore.Http;
 #endif
 
    public class request_and_response_events_are_extensible

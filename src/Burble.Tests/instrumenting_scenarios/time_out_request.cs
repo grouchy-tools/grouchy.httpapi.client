@@ -7,13 +7,12 @@
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
-   using Microsoft.AspNetCore.Http;
    using NUnit.Framework;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
-
+   using Microsoft.AspNetCore.Http;
 #endif
 
    public class time_out_request
@@ -75,6 +74,17 @@
 
          var innerException = _timeoutException.InnerException;
          innerException.ShouldBeOfType<HttpClientTimeoutException>();
+      }
+
+      [Test]
+      public void should_populate_http_client_timeout_exception()
+      {
+         var timeoutException = (HttpClientTimeoutException)_timeoutException.InnerException;
+
+         timeoutException.InnerException.ShouldBeNull();
+         timeoutException.RequestUri.ToString().ShouldBe(_eventUri);
+         timeoutException.Method.ShouldBe(HttpMethod.Get);
+         timeoutException.Message.ShouldBe($"Request timed-out, GET {_eventUri}");
       }
 
       private class PingWebApi : StubWebApiHost

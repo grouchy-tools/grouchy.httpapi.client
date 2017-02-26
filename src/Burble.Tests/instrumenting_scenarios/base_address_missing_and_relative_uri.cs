@@ -1,4 +1,4 @@
-﻿namespace Burble.Tests.simple_scenarios
+﻿namespace Burble.Tests.instrumenting_scenarios
 {
    using System;
    using System.Net.Http;
@@ -13,10 +13,12 @@
 
       public base_address_missing_and_relative_uri()
       {
+         var callback = new StubHttpClientEventCallback();
+
          using (new StubWebApiHost())
          using (var baseHttpClient = new HttpClient())
          {
-            var httpClient = new SimpleHttpClient(baseHttpClient);
+            var httpClient = baseHttpClient.AddInstrumenting(callback);
 
             try
             {

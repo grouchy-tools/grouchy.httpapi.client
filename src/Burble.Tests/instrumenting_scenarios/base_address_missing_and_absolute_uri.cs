@@ -1,4 +1,4 @@
-﻿namespace Burble.Tests.simple_scenarios
+﻿namespace Burble.Tests.instrumenting_scenarios
 {
    using System.Net;
    using System.Net.Http;
@@ -19,10 +19,12 @@
 
       public base_address_missing_and_absolute_uri()
       {
+         var callback = new StubHttpClientEventCallback();
+
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient())
          {
-            var httpClient = new SimpleHttpClient(baseHttpClient);
+            var httpClient = baseHttpClient.AddInstrumenting(callback);
 
             _response = httpClient.GetAsync(webApi.BaseUri + "ping").Result;
          }

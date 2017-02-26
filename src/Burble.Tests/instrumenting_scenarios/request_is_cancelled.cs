@@ -4,6 +4,7 @@
    using System.Linq;
    using System.Net;
    using System.Net.Http;
+   using System.Threading;
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
@@ -15,39 +16,30 @@
    using Microsoft.AspNetCore.Http;
 #endif
 
-   [TestFixture("ping", "/ping")]
-   [TestFixture("/ping", "/ping")]
-   public class instrumenting_get_request
+   public class request_is_cancelled
    {
       private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly HttpResponseMessage _response;
+      private readonly Exception _timeoutException;
 
-      public instrumenting_get_request(string uri, string eventUri)
+      public request_is_cancelled()
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
          {
-            _eventUri = new Uri(webApi.BaseUri, eventUri).ToString();
+            _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
 
             var httpClient = baseHttpClient.AddInstrumenting(_callback);
 
-            _response = httpClient.GetAsync(uri).Result;
+            try
+            {
+               httpClient.GetAsync("/ping", new CancellationTokenSource(TimeSpan.FromMilliseconds(20)).Token).Wait();
+            }
+            catch (Exception e)
+            {
+               _timeoutException = e;
+            }
          }
-      }
-      
-      [Test]
-      public void should_return_status_code_200()
-      {
-         _response.StatusCode.ShouldBe(HttpStatusCode.OK);
-      }
-
-      [Test]
-      public void should_return_content()
-      {
-         var content = _response.Content.ReadAsStringAsync().Result;
-
-         content.ShouldBe("pong");
       }
 
       [Test]
@@ -61,14 +53,28 @@
       }
 
       [Test]
-      public void should_log_response_received()
+      public void should_not_log_response()
       {
-         var lastResponse = _callback.ResponsesReceived.Last();
-         lastResponse.ShouldNotBeNull();
-         lastResponse.EventType.ShouldBe("HttpClientResponseReceived");
-         lastResponse.Uri.ShouldBe(_eventUri);
-         lastResponse.Method.ShouldBe("GET");
-         lastResponse.StatusCode.ShouldBe(200);
+         _callback.ResponsesReceived.ShouldBeEmpty();
+      }
+
+      [Test]
+      public void should_log_timeout_received()
+      {
+         var lastTimeout = _callback.TimeOuts.Last();
+         lastTimeout.ShouldNotBeNull();
+         lastTimeout.EventType.ShouldBe("HttpClientTimedOut");
+         lastTimeout.Uri.ShouldBe(_eventUri);
+         lastTimeout.Method.ShouldBe("GET");
+      }
+      
+      [Test]
+      public void should_throw_http_client_timeout_exception()
+      {
+         _timeoutException.ShouldBeOfType<AggregateException>();
+
+         var innerException = _timeoutException.InnerException;
+         innerException.ShouldBeOfType<HttpClientTimeoutException>();
       }
 
       private class PingWebApi : StubWebApiHost
@@ -77,6 +83,7 @@
          {
             if (context.Request.Method == "GET" && context.Request.Path.ToString() == "/ping")
             {
+               await Task.Delay(2000);
                context.Response.StatusCode = (int)HttpStatusCode.OK;
                await context.Response.WriteAsync("pong");
             }

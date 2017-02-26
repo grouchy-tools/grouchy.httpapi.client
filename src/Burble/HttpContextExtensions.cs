@@ -6,15 +6,6 @@
    public static class HttpContextExtensions
    {
       public static IHttpClient AddInstrumenting(
-         this HttpClient baseHttpClient,
-         IHttpClientEventCallback callback)
-      {
-         return new InstrumentingHttpClient(
-            new SimpleHttpClient(baseHttpClient),
-            callback);
-      }
-
-      public static IHttpClient AddInstrumenting(
          this IHttpClient httpClient,
          IHttpClientEventCallback callback)
       {
@@ -28,19 +19,6 @@
          IThrottleSync throttleSync)
       {
          return new ThrottlingHttpClient(httpClient, throttleSync);
-      }
-
-      public static IHttpClient AddRetrying(
-         this HttpClient baseHttpClient,
-         IRetryPredicate retryPredicate,
-         IRetryDelay retryDelay,
-         IHttpClientEventCallback callback)
-      {
-         return new RetryingHttpClient(
-            new SimpleHttpClient(baseHttpClient),
-            retryPredicate,
-            retryDelay,
-            callback);
       }
 
       public static IHttpClient AddRetrying(

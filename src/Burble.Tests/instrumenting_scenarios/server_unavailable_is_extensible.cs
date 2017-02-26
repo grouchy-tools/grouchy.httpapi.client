@@ -13,7 +13,7 @@
 
       public server_unavailable_is_extensible()
       {
-         var exception = new HttpClientServerUnavailableException(HttpMethod.Get, new Uri("http://something-not-found"));
+         var exception = CreateHttpRequestException();
          var baseHttpClient = new ExceptionHttpClient(exception);
          var httpClient = baseHttpClient.AddInstrumenting(_callback);
 
@@ -33,6 +33,17 @@
          var lastRequest = _callback.ServersUnavailable.Last();
          lastRequest.Tags.Count.ShouldBe(1);
          lastRequest.Tags["Key"].ShouldBe("HttpClientServerUnavailable");
+      }
+
+      private static Exception CreateHttpRequestException()
+      {
+#if NET451
+         var inner = new HttpRequestException("Unable to connect to the remote server");
+#else
+         var inner = new HttpRequestException("A connection with the server could not be established");
+#endif
+
+         return new HttpRequestException("Ooops", inner);
       }
    }
 }
