@@ -1,4 +1,4 @@
-﻿namespace Burble.Tests.logging_scenarios
+﻿namespace Burble.Tests.instrumenting_scenarios
 {
    using System;
    using System.Linq;
@@ -7,30 +7,31 @@
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
+   using Microsoft.AspNetCore.Http;
    using NUnit.Framework;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
-   using Microsoft.AspNetCore.Http;
+
 #endif
 
    [TestFixture("ping", "/ping")]
    [TestFixture("/ping", "/ping")]
-   public class logging_get_request
+   public class instrumenting_get_request
    {
       private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
       private readonly HttpResponseMessage _response;
 
-      public logging_get_request(string uri, string eventUri)
+      public instrumenting_get_request(string uri, string eventUri)
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
          {
             _eventUri = new Uri(webApi.BaseUri, eventUri).ToString();
 
-            var httpClient = baseHttpClient.AddLogging(_callback);
+            var httpClient = baseHttpClient.AddInstrumenting(_callback);
 
             _response = httpClient.GetAsync(uri).Result;
          }

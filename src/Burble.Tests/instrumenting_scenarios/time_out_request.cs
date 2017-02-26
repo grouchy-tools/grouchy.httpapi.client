@@ -1,4 +1,4 @@
-﻿namespace Burble.Tests.logging_scenarios
+﻿namespace Burble.Tests.instrumenting_scenarios
 {
    using System;
    using System.Linq;
@@ -7,12 +7,13 @@
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
+   using Microsoft.AspNetCore.Http;
    using NUnit.Framework;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
-   using Microsoft.AspNetCore.Http;
+
 #endif
 
    public class time_out_request
@@ -28,7 +29,7 @@
          {
             _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
 
-            var httpClient = baseHttpClient.AddLogging(_callback);
+            var httpClient = baseHttpClient.AddInstrumenting(_callback);
 
             try
             {

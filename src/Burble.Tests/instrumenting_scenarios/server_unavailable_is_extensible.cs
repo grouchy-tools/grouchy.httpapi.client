@@ -1,4 +1,4 @@
-﻿namespace Burble.Tests.logging_scenarios
+﻿namespace Burble.Tests.instrumenting_scenarios
 {
    using System;
    using System.Linq;
@@ -15,7 +15,7 @@
       {
          var exception = new HttpClientServerUnavailableException(HttpMethod.Get, new Uri("http://something-not-found"));
          var baseHttpClient = new ExceptionHttpClient(exception);
-         var httpClient = baseHttpClient.AddLogging(_callback);
+         var httpClient = baseHttpClient.AddInstrumenting(_callback);
 
          try
          {

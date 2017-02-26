@@ -1,4 +1,4 @@
-﻿namespace Burble.Tests.logging_scenarios
+﻿namespace Burble.Tests.instrumenting_scenarios
 {
    using System;
    using System.Linq;
@@ -17,7 +17,7 @@
       {
          _exceptionThrown = new Exception();
          var baseHttpClient = new ExceptionHttpClient(_exceptionThrown);
-         var httpClient = baseHttpClient.AddLogging(_callback);
+         var httpClient = baseHttpClient.AddInstrumenting(_callback);
 
          try
          {

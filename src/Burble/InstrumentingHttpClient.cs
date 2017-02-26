@@ -8,12 +8,12 @@
    using Burble.Abstractions;
    using Burble.Events;
 
-   public class LoggingHttpClient : IHttpClient
+   public class InstrumentingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;
       private readonly IHttpClientEventCallback _callback;
 
-      public LoggingHttpClient(
+      public InstrumentingHttpClient(
          IHttpClient httpClient,
          IHttpClientEventCallback callback)
       {

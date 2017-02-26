@@ -1,4 +1,4 @@
-﻿namespace Burble.Tests.logging_scenarios
+﻿namespace Burble.Tests.instrumenting_scenarios
 {
    using System;
    using System.Linq;
@@ -30,7 +30,7 @@
          using (new StubWebApiHost())
          using (var baseHttpClient = new HttpClient { BaseAddress = baseAddress != null ? new Uri(baseAddress) : null })
          {
-            var httpClient = baseHttpClient.AddLogging(_callback);
+            var httpClient = baseHttpClient.AddInstrumenting(_callback);
             var message = new HttpRequestMessage(new HttpMethod(method), requestUri);
 
             try

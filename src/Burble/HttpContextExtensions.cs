@@ -5,20 +5,20 @@
 
    public static class HttpContextExtensions
    {
-      public static IHttpClient AddLogging(
+      public static IHttpClient AddInstrumenting(
          this HttpClient baseHttpClient,
          IHttpClientEventCallback callback)
       {
-         return new LoggingHttpClient(
+         return new InstrumentingHttpClient(
             new SimpleHttpClient(baseHttpClient),
             callback);
       }
 
-      public static IHttpClient AddLogging(
+      public static IHttpClient AddInstrumenting(
          this IHttpClient httpClient,
          IHttpClientEventCallback callback)
       {
-         return new LoggingHttpClient(
+         return new InstrumentingHttpClient(
             httpClient,
             callback);
       }

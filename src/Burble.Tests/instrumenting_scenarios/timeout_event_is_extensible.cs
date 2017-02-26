@@ -1,5 +1,6 @@
-namespace Burble.Tests.logging_scenarios
+﻿namespace Burble.Tests.instrumenting_scenarios
 {
+   using System;
    using System.Linq;
    using System.Net;
    using System.Net.Http;
@@ -14,35 +15,34 @@ namespace Burble.Tests.logging_scenarios
    using Microsoft.AspNetCore.Http;
 #endif
 
-   public class request_and_response_events_are_extensible
+   public class timeout_event_is_extensible
    {
       private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
-      public request_and_response_events_are_extensible()
+      public timeout_event_is_extensible()
       {
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
+         using (var baseHttpClient = new HttpClient {BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50)})
          {
-            var httpClient = baseHttpClient.AddLogging(_callback);
+            var httpClient = baseHttpClient.AddInstrumenting(_callback);
 
-            httpClient.GetAsync("/ping").Wait();
+            try
+            {
+               httpClient.GetAsync("/ping").Wait();
+            }
+            catch
+            {
+               // Ignore the exception;
+            }
          }
       }
-      
-      [Test]
-      public void should_log_request_initiated()
-      {
-         var lastRequest = _callback.RequestsInitiated.Last();
-         lastRequest.Tags.Count.ShouldBe(1);
-         lastRequest.Tags["Key"].ShouldBe("HttpClientRequestInitiated");
-      }
 
       [Test]
-      public void should_log_response_received()
+      public void should_log_timed_out()
       {
-         var lastResponse = _callback.ResponsesReceived.Last();
-         lastResponse.Tags.Count.ShouldBe(1);
-         lastResponse.Tags["Key"].ShouldBe("HttpClientResponseReceived");
+         var lastRequest = _callback.TimeOuts.Last();
+         lastRequest.Tags.Count.ShouldBe(1);
+         lastRequest.Tags["Key"].ShouldBe("HttpClientTimedOut");
       }
 
       private class PingWebApi : StubWebApiHost
@@ -51,6 +51,7 @@ namespace Burble.Tests.logging_scenarios
          {
             if (context.Request.Method == "GET" && context.Request.Path.ToString() == "/ping")
             {
+               await Task.Delay(2000);
                context.Response.StatusCode = (int)HttpStatusCode.OK;
                await context.Response.WriteAsync("pong");
             }
