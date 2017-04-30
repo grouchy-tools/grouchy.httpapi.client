@@ -24,7 +24,7 @@
          var httpClient = _baseHttpClient.AddThrottling(new SemaphoneThrottleSync(ExpectedMaxConcurrentRequests));
 
          var tasks = Enumerable.Range(1, ExpectedTotalRequests).Select(c => httpClient.GetAsync("/ping")).ToArray();
-         Task.WhenAll(tasks).Wait(2000);
+         Task.WhenAll(tasks).Wait(5000);
       }
 
       [Fact]
