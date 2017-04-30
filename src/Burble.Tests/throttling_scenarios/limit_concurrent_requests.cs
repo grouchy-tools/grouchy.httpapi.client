@@ -11,35 +11,45 @@
    using Xunit;
    using Shouldly;
 
-   public class limit_concurrent_requests
+   public class limit_concurrent_requests : IClassFixture<limit_concurrent_requests.fixture>
    {
+      public class fixture
+      {
+         public CountingHttpClient BaseHttpClient { get; }
+
+         public fixture()
+         {
+            BaseHttpClient = new CountingHttpClient();
+            var httpClient = BaseHttpClient.AddThrottling(new SemaphoneThrottleSync(ExpectedMaxConcurrentRequests));
+
+            var tasks = Enumerable.Range(1, ExpectedTotalRequests).Select(c => httpClient.GetAsync("/ping")).ToArray();
+            Task.WhenAll(tasks).Wait(5000);
+         }
+      }
+
       private const int ExpectedMaxConcurrentRequests = 3;
       private const int ExpectedTotalRequests = 7;
 
-      private readonly CountingHttpClient _baseHttpClient;
+      private readonly fixture _fixture;
 
-      public limit_concurrent_requests()
+      public limit_concurrent_requests(fixture fixture)
       {
-         _baseHttpClient = new CountingHttpClient();
-         var httpClient = _baseHttpClient.AddThrottling(new SemaphoneThrottleSync(ExpectedMaxConcurrentRequests));
-
-         var tasks = Enumerable.Range(1, ExpectedTotalRequests).Select(c => httpClient.GetAsync("/ping")).ToArray();
-         Task.WhenAll(tasks).Wait(5000);
+         _fixture = fixture;
       }
 
       [Fact]
       public void should_not_exceed_concurrent_requests()
       {
-         _baseHttpClient.MaxConcurrentRequests.ShouldBeLessThanOrEqualTo(ExpectedMaxConcurrentRequests);
+         _fixture.BaseHttpClient.MaxConcurrentRequests.ShouldBeLessThanOrEqualTo(ExpectedMaxConcurrentRequests);
       }
 
       [Fact]
       public void should_handle_all_requests()
       {
-         _baseHttpClient.TotalRequests.ShouldBe(ExpectedTotalRequests);
+         _fixture.BaseHttpClient.TotalRequests.ShouldBe(ExpectedTotalRequests);
       }
 
-      private class CountingHttpClient : IHttpClient
+      public class CountingHttpClient : IHttpClient
       {
          private readonly object _lock = new object();
 
