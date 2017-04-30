@@ -7,7 +7,7 @@
    using System.Threading;
    using System.Threading.Tasks;
    using Banshee;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
@@ -36,13 +36,13 @@
          }
       }
       
-      [Test]
+      [Fact]
       public void should_return_status_code_200()
       {
          _response.StatusCode.ShouldBe(HttpStatusCode.OK);
       }
 
-      [Test]
+      [Fact]
       public void should_return_content()
       {
          var content = _response.Content.ReadAsStringAsync().Result;
@@ -50,7 +50,7 @@
          content.ShouldBe("pong");
       }
 
-      [Test]
+      [Fact]
       public void should_log_request_initiated()
       {
          var lastRequest = _callback.RequestsInitiated.Last();
@@ -60,7 +60,7 @@
          lastRequest.Method.ShouldBe("POST");
       }
 
-      [Test]
+      [Fact]
       public void should_log_response_received()
       {
          var lastResponse = _callback.ResponsesReceived.Last();

@@ -7,7 +7,7 @@
    using System.Threading;
    using Burble.Abstractions;
    using Burble.Throttling;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 
    public class single_request
@@ -26,7 +26,7 @@
          _actualResponse = httpClient.GetAsync("/ping").Result;
       }
       
-      [Test]
+      [Fact]
       public void should_return_response_from_inner_httpclient()
       {
          _actualResponse.ShouldBeSameAs(_expectedResponse);

@@ -8,7 +8,7 @@
    using System.Threading;
    using Burble.Abstractions;
    using Burble.Throttling;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 
    public class limit_concurrent_requests
@@ -27,13 +27,13 @@
          Task.WhenAll(tasks).Wait(1000);
       }
 
-      [Test]
+      [Fact]
       public void should_not_exceed_concurrent_requests()
       {
          _baseHttpClient.MaxConcurrentRequests.ShouldBeLessThanOrEqualTo(ExpectedMaxConcurrentRequests);
       }
 
-      [Test]
+      [Fact]
       public void should_handle_all_requests()
       {
          _baseHttpClient.TotalRequests.ShouldBe(ExpectedTotalRequests);

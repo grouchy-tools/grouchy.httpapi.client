@@ -7,7 +7,7 @@
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
@@ -37,7 +37,7 @@
          }
       }
 
-      [Test]
+      [Fact]
       public void should_log_timed_out()
       {
          var lastRequest = _callback.TimeOuts.Last();

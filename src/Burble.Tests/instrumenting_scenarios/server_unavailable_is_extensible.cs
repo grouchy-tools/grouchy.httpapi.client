@@ -4,7 +4,7 @@
    using System.Linq;
    using System.Net.Http;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 
    public class server_unavailable_is_extensible
@@ -27,7 +27,7 @@
          }
       }
 
-      [Test]
+      [Fact]
       public void should_log_server_unavailable()
       {
          var lastRequest = _callback.ServersUnavailable.Last();

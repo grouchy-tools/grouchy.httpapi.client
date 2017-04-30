@@ -3,7 +3,7 @@
    using System;
    using System.Linq;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 
    public class exception_event_is_extensible
@@ -25,7 +25,7 @@
          }
       }
 
-      [Test]
+      [Fact]
       public void should_log_exception_thrown()
       {
          var lastRequest = _callback.ExceptionsThrown.Last();

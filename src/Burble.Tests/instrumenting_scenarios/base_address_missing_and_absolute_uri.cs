@@ -5,7 +5,7 @@
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
@@ -30,13 +30,13 @@
          }
       }
       
-      [Test]
+      [Fact]
       public void should_return_status_code_200()
       {
          _response.StatusCode.ShouldBe(HttpStatusCode.OK);
       }
 
-      [Test]
+      [Fact]
       public void should_return_content()
       {
          var content = _response.Content.ReadAsStringAsync().Result;

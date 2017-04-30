@@ -2,7 +2,7 @@
 {
    using System;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 
    public class multiple_retry_with_exception
@@ -32,7 +32,7 @@
          }
       }
 
-      [Test]
+      [Fact]
       public void should_log_three_attempts()
       {
          _callback.RetryAttempts.Length.ShouldBe(ExpectedRetries);
@@ -41,7 +41,7 @@
          _callback.RetryAttempts[2].Attempt.ShouldBe(3);
       }
 
-      [Test]
+      [Fact]
       public void should_log_retry_attempt()
       {
          _callback.RetryAttempts[0].EventType.ShouldBe("HttpClientRetryAttempt");
@@ -49,7 +49,7 @@
          _callback.RetryAttempts[0].Method.ShouldBe("GET");
       }
 
-      [Test]
+      [Fact]
       public void should_throw_exception()
       {
          _caughtException.ShouldBeOfType<AggregateException>();

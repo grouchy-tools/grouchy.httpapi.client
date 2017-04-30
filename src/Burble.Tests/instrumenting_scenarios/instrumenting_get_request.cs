@@ -1,13 +1,14 @@
 ﻿namespace Burble.Tests.instrumenting_scenarios
 {
    using System;
+   using System.Collections.Generic;
    using System.Linq;
    using System.Net;
    using System.Net.Http;
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
@@ -15,15 +16,14 @@
    using Microsoft.AspNetCore.Http;
 #endif
 
-   [TestFixture("ping", "/ping")]
-   [TestFixture("/ping", "/ping")]
    public class instrumenting_get_request
    {
-      private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly HttpResponseMessage _response;
 
-      public instrumenting_get_request(string uri, string eventUri)
+      private string _eventUri;
+      private HttpResponseMessage _response;
+
+      private void act(string uri, string eventUri)
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
@@ -35,24 +35,36 @@
             _response = httpClient.GetAsync(uri).Result;
          }
       }
-      
-      [Test]
-      public void should_return_status_code_200()
+
+      public static IEnumerable<object[]> TestData { get; } = new[]
       {
+         new object[] { "ping", "/ping" },
+         new object[] { "/ping", "/ping" }
+      };
+
+      [Theory, MemberData(nameof(TestData))]
+      public void should_return_status_code_200(string uri, string eventUri)
+      {
+         act(uri, eventUri);
+
          _response.StatusCode.ShouldBe(HttpStatusCode.OK);
       }
 
-      [Test]
-      public void should_return_content()
+      [Theory, MemberData(nameof(TestData))]
+      public void should_return_content(string uri, string eventUri)
       {
+         act(uri, eventUri);
+
          var content = _response.Content.ReadAsStringAsync().Result;
 
          content.ShouldBe("pong");
       }
 
-      [Test]
-      public void should_log_request_initiated()
+      [Theory, MemberData(nameof(TestData))]
+      public void should_log_request_initiated(string uri, string eventUri)
       {
+         act(uri, eventUri);
+
          var lastRequest = _callback.RequestsInitiated.Last();
          lastRequest.ShouldNotBeNull();
          lastRequest.EventType.ShouldBe("HttpClientRequestInitiated");
@@ -60,9 +72,11 @@
          lastRequest.Method.ShouldBe("GET");
       }
 
-      [Test]
-      public void should_log_response_received()
+      [Theory, MemberData(nameof(TestData))]
+      public void should_log_response_received(string uri, string eventUri)
       {
+         act(uri, eventUri);
+
          var lastResponse = _callback.ResponsesReceived.Last();
          lastResponse.ShouldNotBeNull();
          lastResponse.EventType.ShouldBe("HttpClientResponseReceived");

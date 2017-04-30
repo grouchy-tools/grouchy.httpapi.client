@@ -6,7 +6,7 @@
    using Burble.Abstractions;
    using Burble.EventCallbacks;
    using Burble.Events;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 
    public class json_client_event_callback
@@ -29,7 +29,7 @@
          _testSubject = new JsonHttpClientEventCallback(jsonCallback);
       }
 
-      [Test]
+      [Fact]
       public void serialise_client_request_initiated()
       {
          var clientRequest = HttpClientRequestInitiated.Create(_request, _baseAddress);
@@ -40,7 +40,7 @@
          _json.ShouldBe("{\"eventType\":\"HttpClientRequestInitiated\",\"timestamp\":\"2016-11-18T19:52:06.4425454+00:00\",\"uri\":\"http://localhost:8080/ping\",\"method\":\"GET\"}");
       }
 
-      [Test]
+      [Fact]
       public void serialise_client_request_initiated_with_tag()
       {
          var clientRequest = HttpClientRequestInitiated.Create(_request, _baseAddress);
@@ -52,7 +52,7 @@
          _json.ShouldBe("{\"eventType\":\"HttpClientRequestInitiated\",\"timestamp\":\"2016-11-18T19:52:06.4425454+00:00\",\"uri\":\"http://localhost:8080/ping\",\"method\":\"GET\",\"tags\":{\"key\":\"value\"}}");
       }
 
-      [Test]
+      [Fact]
       public void serialise_client_response_received()
       {
          var clientRequest = HttpClientResponseReceived.Create(_response, _baseAddress, 7);
@@ -63,7 +63,7 @@
          _json.ShouldBe("{\"eventType\":\"HttpClientResponseReceived\",\"timestamp\":\"2016-11-18T19:52:06.4425454+00:00\",\"uri\":\"http://localhost:8080/ping\",\"method\":\"GET\",\"durationMs\":7,\"statusCode\":202}");
       }
 
-      [Test]
+      [Fact]
       public void serialise_client_response_received_with_tag()
       {
          var clientRequest = HttpClientResponseReceived.Create(_response, _baseAddress, 7);

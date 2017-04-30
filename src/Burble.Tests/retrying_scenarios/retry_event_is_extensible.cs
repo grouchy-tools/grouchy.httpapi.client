@@ -3,7 +3,7 @@
    using System;
    using System.Linq;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 
    public class retry_event_is_extensible
@@ -28,7 +28,7 @@
          }
       }
 
-      [Test]
+      [Fact]
       public void should_log_retry_attempt()
       {
          var lastRequest = _callback.RetryAttempts.Last();

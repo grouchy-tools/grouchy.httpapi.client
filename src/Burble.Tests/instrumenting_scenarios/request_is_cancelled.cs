@@ -8,7 +8,7 @@
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
@@ -42,7 +42,7 @@
          }
       }
 
-      [Test]
+      [Fact]
       public void should_log_request_initiated()
       {
          var lastRequest = _callback.RequestsInitiated.Last();
@@ -52,13 +52,13 @@
          lastRequest.Method.ShouldBe("GET");
       }
 
-      [Test]
+      [Fact]
       public void should_not_log_response()
       {
          _callback.ResponsesReceived.ShouldBeEmpty();
       }
 
-      [Test]
+      [Fact]
       public void should_log_timeout_received()
       {
          var lastTimeout = _callback.TimeOuts.Last();
@@ -68,7 +68,7 @@
          lastTimeout.Method.ShouldBe("GET");
       }
       
-      [Test]
+      [Fact]
       public void should_throw_http_client_timeout_exception()
       {
          _timeoutException.ShouldBeOfType<AggregateException>();

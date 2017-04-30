@@ -6,7 +6,7 @@ namespace Burble.Tests.instrumenting_scenarios
    using System.Threading.Tasks;
    using Banshee;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
@@ -29,7 +29,7 @@ namespace Burble.Tests.instrumenting_scenarios
          }
       }
       
-      [Test]
+      [Fact]
       public void should_log_request_initiated()
       {
          var lastRequest = _callback.RequestsInitiated.Last();
@@ -37,7 +37,7 @@ namespace Burble.Tests.instrumenting_scenarios
          lastRequest.Tags["Key"].ShouldBe("HttpClientRequestInitiated");
       }
 
-      [Test]
+      [Fact]
       public void should_log_response_received()
       {
          var lastResponse = _callback.ResponsesReceived.Last();

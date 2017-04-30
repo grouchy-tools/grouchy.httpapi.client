@@ -4,7 +4,7 @@
    using System.Linq;
    using System.Net.Http;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 
    public class get_throws_exception
@@ -29,7 +29,7 @@
          }
       }
       
-      [Test]
+      [Fact]
       public void should_log_request_initiated()
       {
          var lastRequest = _callback.RequestsInitiated.Last();
@@ -39,19 +39,19 @@
          lastRequest.Method.ShouldBe("GET");
       }
 
-      [Test]
+      [Fact]
       public void should_not_log_response()
       {
          _callback.ResponsesReceived.ShouldBeEmpty();
       }
 
-      [Test]
+      [Fact]
       public void should_not_log_timeout_received()
       {
          _callback.TimeOuts.ShouldBeEmpty();
       }
 
-      [Test]
+      [Fact]
       public void should_log_exception_received()
       {
          var lastException = _callback.ExceptionsThrown.Last();
@@ -62,14 +62,14 @@
          lastException.Exception.ShouldBeSameAs(_exceptionThrown);
       }
       
-      [Test]
+      [Fact]
       public void should_throw_http_client_exception()
       {
          _exception.ShouldBeOfType<AggregateException>();
          _exception.InnerException.ShouldBeOfType<HttpClientException>();
       }
 
-      [Test]
+      [Fact]
       public void should_populate_http_client_exception()
       {
          var httpClientException = (HttpClientException)_exception.InnerException;

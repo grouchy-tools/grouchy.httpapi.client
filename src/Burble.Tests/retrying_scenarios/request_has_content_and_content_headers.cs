@@ -9,7 +9,7 @@
    using Burble.Abstractions;
    using Newtonsoft.Json;
    using Newtonsoft.Json.Linq;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
@@ -44,14 +44,14 @@
          }
       }
 
-      [Test]
+      [Fact]
       public void response_should_be_json()
       {
          var json = JObject.Parse(_content);
          json.ShouldNotBeNull();
       }
 
-      [Test]
+      [Fact]
       public void body_values_are_returned()
       {
          var json = JObject.Parse(_content);
@@ -59,7 +59,7 @@
          json.ShouldContainKeyAndValue("contentB", "valueB");
       }
 
-      [Test]
+      [Fact]
       public void header_values_are_returned()
       {
          var json = JObject.Parse(_content);
@@ -81,7 +81,6 @@
                   await Task.Delay(100);
                }
 
-            Console.WriteLine("X");
                JObject body;
                using (var reader = new StreamReader(context.Request.Body))
                using (var jsonReader = new JsonTextReader(reader))

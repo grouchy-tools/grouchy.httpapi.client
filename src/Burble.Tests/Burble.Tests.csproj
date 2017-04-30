@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Ensure that xunit.execution.desktop.dll is copied to target folder for net451 -->
+  <Import Project="$(USERPROFILE)\.nuget\packages\xunit.core\2.2.0\build\uap10.0\xunit.core.props" Condition="'$(TargetFramework)' == 'net451' and Exists('$(USERPROFILE)\.nuget\packages\xunit.core\2.2.0\build\uap10.0\xunit.core.props')" />
+
+  <PropertyGroup>
+    <AssemblyTitle>Burble.Tests</AssemblyTitle>
+    <TargetFrameworks>netcoreapp1.0;net451</TargetFrameworks>
+    <AssemblyName>Burble.Tests</AssemblyName>
+    <PackageId>Burble.Tests</PackageId>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">1.0.4</RuntimeFrameworkVersion>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Burble\Burble.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Banshee" Version="0.0.2" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="Shouldly" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">
+    <Reference Include="System.Runtime" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="3.0.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0-beta1-build1309" />
+  </ItemGroup>
+
+</Project>

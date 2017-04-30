@@ -4,7 +4,7 @@
    using System.Net.Http;
    using Banshee;
    using Burble.Abstractions;
-   using NUnit.Framework;
+   using Xunit;
    using Shouldly;
 
    public class base_address_missing_and_relative_uri
@@ -31,7 +31,7 @@
          }
       }
       
-      [Test]
+      [Fact]
       public void should_throw_argument_exception()
       {
          _requestException.ShouldBeOfType<AggregateException>();
@@ -39,7 +39,7 @@
          _requestException.InnerException.ShouldBeOfType<ArgumentException>();
       }
 
-      [Test]
+      [Fact]
       public void should_populate_argument_exception_message()
       {
          var exception = (ArgumentException)_requestException.InnerException;
