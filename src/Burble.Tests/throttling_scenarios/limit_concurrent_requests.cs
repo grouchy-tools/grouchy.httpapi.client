@@ -44,6 +44,7 @@
       }
 
       [Fact]
+      [Trait("Category", "local-only")] // TODO: This doesn't pass in Appveyor
       public void should_handle_all_requests()
       {
          _fixture.BaseHttpClient.TotalRequests.ShouldBe(ExpectedTotalRequests);

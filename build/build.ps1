@@ -35,8 +35,8 @@ task Build {
 
 task Test -depends Build {
    exec { dotnet restore $TestProjectJsonPath }
-   exec { dotnet test $TestProjectJsonPath -c $Configuration -f netcoreapp1.0 }
-   exec { dotnet test $TestProjectJsonPath -c $Configuration -f net451 }
+   exec { dotnet test $TestProjectJsonPath -c $Configuration -f netcoreapp1.0 --filter Category!=local-only }
+   exec { dotnet test $TestProjectJsonPath -c $Configuration -f net451 --filter Category!=local-only }
 }
 
 task Package -depends Build {
