@@ -1,24 +1,27 @@
-﻿namespace Burble.Tests.retrying_scenarios
-{
-   using System.Net;
-   using System.Net.Http;
-   using System.Threading.Tasks;
-   using Banshee;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Banshee;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
+
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
+namespace Burble.Tests.retrying_scenarios
+{
    public class success_so_no_retry
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly HttpResponseMessage _response;
+      
+      private HttpResponseMessage _response;
 
-      public success_so_no_retry()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          using (var webApi = new success_so_no_retry.PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
@@ -32,19 +35,19 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void should_not_log_retry_attempts()
       {
          _callback.RetryAttempts.Length.ShouldBe(0);
       }
 
-      [Fact]
+      [Test]
       public void should_return_status_code_200()
       {
          _response.StatusCode.ShouldBe(HttpStatusCode.OK);
       }
 
-      [Fact]
+      [Test]
       public void should_return_content()
       {
          var content = _response.Content.ReadAsStringAsync().Result;

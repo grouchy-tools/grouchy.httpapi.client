@@ -1,8 +1,8 @@
-﻿namespace Burble.Tests.retrying_scenarios
-{
-   using System.Net.Http;
-   using Burble.Abstractions;
+﻿using System.Net.Http;
+using Burble.Abstractions;
 
+namespace Burble.Tests.retrying_scenarios
+{
    public class StubRetryPredicate : IRetryPredicate
    {
       private readonly int _retries;

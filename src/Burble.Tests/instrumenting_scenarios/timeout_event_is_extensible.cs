@@ -1,25 +1,27 @@
-﻿namespace Burble.Tests.instrumenting_scenarios
-{
-   using System;
-   using System.Linq;
-   using System.Net;
-   using System.Net.Http;
-   using System.Threading.Tasks;
-   using Banshee;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Banshee;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
+
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class timeout_event_is_extensible
    {
       private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
-      public timeout_event_is_extensible()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient {BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50)})
@@ -37,7 +39,7 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void should_log_timed_out()
       {
          var lastRequest = _callback.TimeOuts.Last();

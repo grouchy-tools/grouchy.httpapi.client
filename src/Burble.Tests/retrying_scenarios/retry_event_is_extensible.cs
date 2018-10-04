@@ -1,16 +1,17 @@
-﻿namespace Burble.Tests.retrying_scenarios
-{
-   using System;
-   using System.Linq;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Linq;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
 
+namespace Burble.Tests.retrying_scenarios
+{
    public class retry_event_is_extensible
    {
       private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
-      public retry_event_is_extensible()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          var baseHttpClient = new ExceptionHttpClient(new Exception());
          var httpClient = baseHttpClient.AddRetrying(
@@ -28,7 +29,7 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void should_log_retry_attempt()
       {
          var lastRequest = _callback.RetryAttempts.Last();

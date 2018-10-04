@@ -1,19 +1,21 @@
-﻿namespace Burble.Tests.retrying_scenarios
-{
-   using System;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
 
+namespace Burble.Tests.retrying_scenarios
+{
    public class multiple_retry_with_exception
    {
       private const int ExpectedRetries = 3;
 
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly Exception _exceptionToThrow;
-      private readonly Exception _caughtException;
+      
+      private Exception _exceptionToThrow;
+      private Exception _caughtException;
 
-      public multiple_retry_with_exception()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          _exceptionToThrow = new Exception();
          var baseHttpClient = new ExceptionHttpClient(_exceptionToThrow);
@@ -32,7 +34,7 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void should_log_three_attempts()
       {
          _callback.RetryAttempts.Length.ShouldBe(ExpectedRetries);
@@ -41,7 +43,7 @@
          _callback.RetryAttempts[2].Attempt.ShouldBe(3);
       }
 
-      [Fact]
+      [Test]
       public void should_log_retry_attempt()
       {
          _callback.RetryAttempts[0].EventType.ShouldBe("HttpClientRetryAttempt");
@@ -49,7 +51,7 @@
          _callback.RetryAttempts[0].Method.ShouldBe("GET");
       }
 
-      [Fact]
+      [Test]
       public void should_throw_exception()
       {
          _caughtException.ShouldBeOfType<AggregateException>();

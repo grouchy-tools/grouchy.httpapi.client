@@ -1,21 +1,22 @@
-﻿namespace Burble.Tests.instrumenting_scenarios
-{
-   using System;
-   using System.Collections.Generic;
-   using System.Linq;
-   using System.Net;
-   using System.Net.Http;
-   using System.Threading.Tasks;
-   using Banshee;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Banshee;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
+
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class instrumenting_get_request
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -42,7 +43,7 @@
          new object[] { "/ping", "/ping" }
       };
 
-      [Theory, MemberData(nameof(TestData))]
+      [TestCaseSource(nameof(TestData))]
       public void should_return_status_code_200(string uri, string eventUri)
       {
          act(uri, eventUri);
@@ -50,7 +51,7 @@
          _response.StatusCode.ShouldBe(HttpStatusCode.OK);
       }
 
-      [Theory, MemberData(nameof(TestData))]
+      [TestCaseSource(nameof(TestData))]
       public void should_return_content(string uri, string eventUri)
       {
          act(uri, eventUri);
@@ -60,7 +61,7 @@
          content.ShouldBe("pong");
       }
 
-      [Theory, MemberData(nameof(TestData))]
+      [TestCaseSource(nameof(TestData))]
       public void should_log_request_initiated(string uri, string eventUri)
       {
          act(uri, eventUri);
@@ -72,7 +73,7 @@
          lastRequest.Method.ShouldBe("GET");
       }
 
-      [Theory, MemberData(nameof(TestData))]
+      [TestCaseSource(nameof(TestData))]
       public void should_log_response_received(string uri, string eventUri)
       {
          act(uri, eventUri);

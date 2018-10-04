@@ -1,28 +1,31 @@
-﻿namespace Burble.Tests.retrying_scenarios
-{
-   using System;
-   using System.Net;
-   using System.Net.Http;
-   using System.Threading.Tasks;
-   using Banshee;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Banshee;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
+
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
+namespace Burble.Tests.retrying_scenarios
+{
    public class multiple_retry_with_timeout
    {
       private const int ExpectedRetries = 3;
 
-      private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly Exception _exception;
 
-      public multiple_retry_with_timeout()
+      private string _eventUri;
+      private Exception _exception;
+
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(10) })
@@ -45,7 +48,7 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void should_log_three_attempts()
       {
          _callback.RetryAttempts.Length.ShouldBe(ExpectedRetries);
@@ -54,7 +57,7 @@
          _callback.RetryAttempts[2].Attempt.ShouldBe(3);
       }
 
-      [Fact]
+      [Test]
       public void should_log_retry_attempt()
       {
          _callback.RetryAttempts[0].EventType.ShouldBe("HttpClientRetryAttempt");
@@ -62,7 +65,7 @@
          _callback.RetryAttempts[0].Method.ShouldBe("GET");
       }
       
-      [Fact]
+      [Test]
       public void should_throw_task_cancelled_exception()
       {
          _exception.ShouldBeOfType<AggregateException>();

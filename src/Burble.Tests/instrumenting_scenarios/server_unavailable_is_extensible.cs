@@ -1,17 +1,18 @@
-﻿namespace Burble.Tests.instrumenting_scenarios
-{
-   using System;
-   using System.Linq;
-   using System.Net.Http;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Linq;
+using System.Net.Http;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class server_unavailable_is_extensible
    {
       private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
-      public server_unavailable_is_extensible()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          var exception = CreateHttpRequestException();
          var baseHttpClient = new ExceptionHttpClient(exception);
@@ -27,7 +28,7 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void should_log_server_unavailable()
       {
          var lastRequest = _callback.ServersUnavailable.Last();

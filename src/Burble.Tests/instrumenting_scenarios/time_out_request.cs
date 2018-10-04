@@ -1,27 +1,30 @@
-﻿namespace Burble.Tests.instrumenting_scenarios
-{
-   using System;
-   using System.Linq;
-   using System.Net;
-   using System.Net.Http;
-   using System.Threading.Tasks;
-   using Banshee;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Banshee;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
+
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class time_out_request
    {
-      private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly Exception _timeoutException;
 
-      public time_out_request()
+      private string _eventUri;
+      private Exception _timeoutException;
+
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50) })
@@ -41,7 +44,7 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void should_log_request_initiated()
       {
          var lastRequest = _callback.RequestsInitiated.Last();
@@ -51,13 +54,13 @@
          lastRequest.Method.ShouldBe("GET");
       }
 
-      [Fact]
+      [Test]
       public void should_not_log_response()
       {
          _callback.ResponsesReceived.ShouldBeEmpty();
       }
 
-      [Fact]
+      [Test]
       public void should_log_timeout_received()
       {
          var lastTimeout = _callback.TimeOuts.Last();
@@ -67,7 +70,7 @@
          lastTimeout.Method.ShouldBe("GET");
       }
       
-      [Fact]
+      [Test]
       public void should_throw_http_client_timeout_exception()
       {
          _timeoutException.ShouldBeOfType<AggregateException>();
@@ -76,7 +79,7 @@
          innerException.ShouldBeOfType<HttpClientTimeoutException>();
       }
 
-      [Fact]
+      [Test]
       public void should_populate_http_client_timeout_exception()
       {
          var timeoutException = (HttpClientTimeoutException)_timeoutException.InnerException;

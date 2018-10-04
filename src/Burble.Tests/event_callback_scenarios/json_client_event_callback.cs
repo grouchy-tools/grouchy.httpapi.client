@@ -1,24 +1,25 @@
-﻿namespace Burble.Tests.event_callback_scenarios
-{
-   using System;
-   using System.Net;
-   using System.Net.Http;
-   using Burble.Abstractions;
-   using Burble.EventCallbacks;
-   using Burble.Events;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Net;
+using System.Net.Http;
+using Burble.Abstractions;
+using Burble.EventCallbacks;
+using Burble.Events;
+using NUnit.Framework;
+using Shouldly;
 
+namespace Burble.Tests.event_callback_scenarios
+{
    public class json_client_event_callback
    {
-      private readonly Uri _baseAddress;
-      private readonly HttpRequestMessage _request;
-      private readonly HttpResponseMessage _response;
-      private readonly IHttpClientEventCallback _testSubject;
+      private Uri _baseAddress;
+      private HttpRequestMessage _request;
+      private HttpResponseMessage _response;
+      private IHttpClientEventCallback _testSubject;
 
       private string _json;
 
-      public json_client_event_callback()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          _baseAddress = new Uri("http://localhost:8080");
          _request = new HttpRequestMessage(HttpMethod.Get, "/ping");
@@ -29,7 +30,7 @@
          _testSubject = new JsonHttpClientEventCallback(jsonCallback);
       }
 
-      [Fact]
+      [Test]
       public void serialise_client_request_initiated()
       {
          var clientRequest = HttpClientRequestInitiated.Create(_request, _baseAddress);
@@ -40,7 +41,7 @@
          _json.ShouldBe("{\"eventType\":\"HttpClientRequestInitiated\",\"timestamp\":\"2016-11-18T19:52:06.4425454+00:00\",\"uri\":\"http://localhost:8080/ping\",\"method\":\"GET\"}");
       }
 
-      [Fact]
+      [Test]
       public void serialise_client_request_initiated_with_tag()
       {
          var clientRequest = HttpClientRequestInitiated.Create(_request, _baseAddress);
@@ -52,7 +53,7 @@
          _json.ShouldBe("{\"eventType\":\"HttpClientRequestInitiated\",\"timestamp\":\"2016-11-18T19:52:06.4425454+00:00\",\"uri\":\"http://localhost:8080/ping\",\"method\":\"GET\",\"tags\":{\"key\":\"value\"}}");
       }
 
-      [Fact]
+      [Test]
       public void serialise_client_response_received()
       {
          var clientRequest = HttpClientResponseReceived.Create(_response, _baseAddress, 7);
@@ -63,7 +64,7 @@
          _json.ShouldBe("{\"eventType\":\"HttpClientResponseReceived\",\"timestamp\":\"2016-11-18T19:52:06.4425454+00:00\",\"uri\":\"http://localhost:8080/ping\",\"method\":\"GET\",\"durationMs\":7,\"statusCode\":202}");
       }
 
-      [Fact]
+      [Test]
       public void serialise_client_response_received_with_tag()
       {
          var clientRequest = HttpClientResponseReceived.Create(_response, _baseAddress, 7);

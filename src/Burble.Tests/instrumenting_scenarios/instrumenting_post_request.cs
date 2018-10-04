@@ -1,27 +1,30 @@
-﻿namespace Burble.Tests.instrumenting_scenarios
-{
-   using System;
-   using System.Linq;
-   using System.Net;
-   using System.Net.Http;
-   using System.Threading;
-   using System.Threading.Tasks;
-   using Banshee;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Banshee;
+using NUnit.Framework;
+using Shouldly;
+
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class instrumenting_post_request
    {
-      private readonly string _eventUri;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly HttpResponseMessage _response;
 
-      public instrumenting_post_request()
+      private string _eventUri;
+      private HttpResponseMessage _response;
+
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
@@ -36,13 +39,13 @@
          }
       }
       
-      [Fact]
+      [Test]
       public void should_return_status_code_200()
       {
          _response.StatusCode.ShouldBe(HttpStatusCode.OK);
       }
 
-      [Fact]
+      [Test]
       public void should_return_content()
       {
          var content = _response.Content.ReadAsStringAsync().Result;
@@ -50,7 +53,7 @@
          content.ShouldBe("pong");
       }
 
-      [Fact]
+      [Test]
       public void should_log_request_initiated()
       {
          var lastRequest = _callback.RequestsInitiated.Last();
@@ -60,7 +63,7 @@
          lastRequest.Method.ShouldBe("POST");
       }
 
-      [Fact]
+      [Test]
       public void should_log_response_received()
       {
          var lastResponse = _callback.ResponsesReceived.Last();

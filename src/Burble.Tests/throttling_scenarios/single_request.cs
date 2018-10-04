@@ -1,23 +1,24 @@
-﻿namespace Burble.Tests.throttling_scenarios
-{
-   using System;
-   using System.Net;
-   using System.Threading.Tasks;
-   using System.Net.Http;
-   using System.Threading;
-   using Burble.Abstractions;
-   using Burble.Throttling;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Threading;
+using Burble.Abstractions;
+using Burble.Throttling;
+using NUnit.Framework;
+using Shouldly;
 
+namespace Burble.Tests.throttling_scenarios
+{
    public class single_request
    {
       private const int ConcurrentRequests = 3;
 
-      private readonly HttpResponseMessage _expectedResponse;
-      private readonly HttpResponseMessage _actualResponse;
+      private HttpResponseMessage _expectedResponse;
+      private HttpResponseMessage _actualResponse;
 
-      public single_request()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          _expectedResponse = new HttpResponseMessage(HttpStatusCode.Accepted);
          var baseHttpClient = new StubHttpClient(_expectedResponse);
@@ -26,7 +27,7 @@
          _actualResponse = httpClient.GetAsync("/ping").Result;
       }
       
-      [Fact]
+      [Test]
       public void should_return_response_from_inner_httpclient()
       {
          _actualResponse.ShouldBeSameAs(_expectedResponse);
@@ -34,7 +35,7 @@
 
       private class StubHttpClient : IHttpClient
       {
-         private readonly HttpResponseMessage _response;
+         private HttpResponseMessage _response;
 
          public StubHttpClient(HttpResponseMessage response)
          {

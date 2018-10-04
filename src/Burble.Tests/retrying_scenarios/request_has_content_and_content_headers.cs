@@ -1,28 +1,31 @@
-﻿namespace Burble.Tests.retrying_scenarios
-{
-   using System;
-   using System.IO;
-   using System.Net;
-   using System.Net.Http;
-   using System.Threading.Tasks;
-   using Banshee;
-   using Burble.Abstractions;
-   using Newtonsoft.Json;
-   using Newtonsoft.Json.Linq;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Banshee;
+using Burble.Abstractions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+using Shouldly;
+
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
+namespace Burble.Tests.retrying_scenarios
+{
    public class request_has_content_and_content_headers
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly string _content;
+      
+      private string _content;
 
-      public request_has_content_and_content_headers()
+      [OneTimeSetUp]
+      public void setup_scenario()
       { 
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(100000) })
@@ -44,14 +47,14 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void response_should_be_json()
       {
          var json = JObject.Parse(_content);
          json.ShouldNotBeNull();
       }
 
-      [Fact]
+      [Test]
       public void body_values_are_returned()
       {
          var json = JObject.Parse(_content);
@@ -59,7 +62,7 @@
          json.ShouldContainKeyAndValue("contentB", "valueB");
       }
 
-      [Fact]
+      [Test]
       public void header_values_are_returned()
       {
          var json = JObject.Parse(_content);

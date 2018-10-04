@@ -1,20 +1,22 @@
-﻿namespace Burble.Tests.retrying_scenarios
-{
-   using System;
-   using System.Collections.Generic;
-   using System.Net.Http;
-   using System.Threading;
-   using System.Threading.Tasks;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
 
+namespace Burble.Tests.retrying_scenarios
+{
    public class request_has_properties
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly StubHttpClient _baseHttpClient;
+      
+      private StubHttpClient _baseHttpClient;
 
-      public request_has_properties()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          _baseHttpClient = new StubHttpClient();
 
@@ -37,14 +39,14 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void properties_should_exist_in_first_request()
       {
          _baseHttpClient.Requests[0].Properties.ShouldContainKeyAndValue("propertyA", "valueA");
          _baseHttpClient.Requests[0].Properties.ShouldContainKeyAndValue("propertyB", 12358);
       }
 
-      [Fact]
+      [Test]
       public void properties_should_exist_in_second_request()
       {
          _baseHttpClient.Requests[1].Properties.ShouldContainKeyAndValue("propertyA", "valueA");

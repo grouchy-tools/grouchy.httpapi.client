@@ -1,16 +1,17 @@
-﻿namespace Burble.Tests.instrumenting_scenarios
-{
-   using System;
-   using System.Linq;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Linq;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class exception_event_is_extensible
    {
       private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
-      public exception_event_is_extensible()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          var baseHttpClient = new ExceptionHttpClient(new Exception());
          var httpClient = baseHttpClient.AddInstrumenting(_callback);
@@ -25,7 +26,7 @@
          }
       }
 
-      [Fact]
+      [Test]
       public void should_log_exception_thrown()
       {
          var lastRequest = _callback.ExceptionsThrown.Last();

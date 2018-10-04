@@ -1,7 +1,7 @@
-﻿namespace Burble.Tests.retrying_scenarios
-{
-   using Burble.Abstractions;
+﻿using Burble.Abstractions;
 
+namespace Burble.Tests.retrying_scenarios
+{
    public class StubRetryDelay : IRetryDelay
    {
       private readonly int _delayMs;

@@ -1,23 +1,25 @@
-﻿namespace Burble.Tests.instrumenting_scenarios
-{
-   using System.Net;
-   using System.Net.Http;
-   using System.Threading.Tasks;
-   using Banshee;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Banshee;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
+
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class base_address_missing_and_absolute_uri
    {
-      private readonly HttpResponseMessage _response;
+      private HttpResponseMessage _response;
 
-      public base_address_missing_and_absolute_uri()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          var callback = new StubHttpClientEventCallback();
 
@@ -30,13 +32,13 @@
          }
       }
       
-      [Fact]
+      [Test]
       public void should_return_status_code_200()
       {
          _response.StatusCode.ShouldBe(HttpStatusCode.OK);
       }
 
-      [Fact]
+      [Test]
       public void should_return_content()
       {
          var content = _response.Content.ReadAsStringAsync().Result;

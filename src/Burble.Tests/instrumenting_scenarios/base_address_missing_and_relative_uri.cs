@@ -1,17 +1,18 @@
-﻿namespace Burble.Tests.instrumenting_scenarios
-{
-   using System;
-   using System.Net.Http;
-   using Banshee;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Net.Http;
+using Banshee;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class base_address_missing_and_relative_uri
    {
-      private readonly Exception _requestException;
+      private Exception _requestException;
 
-      public base_address_missing_and_relative_uri()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          var callback = new StubHttpClientEventCallback();
 
@@ -31,7 +32,7 @@
          }
       }
       
-      [Fact]
+      [Test]
       public void should_throw_argument_exception()
       {
          _requestException.ShouldBeOfType<AggregateException>();
@@ -39,7 +40,7 @@
          _requestException.InnerException.ShouldBeOfType<ArgumentException>();
       }
 
-      [Fact]
+      [Test]
       public void should_populate_argument_exception_message()
       {
          var exception = (ArgumentException)_requestException.InnerException;

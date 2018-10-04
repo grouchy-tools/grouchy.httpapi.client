@@ -1,24 +1,26 @@
-namespace Burble.Tests.instrumenting_scenarios
-{
-   using System.Linq;
-   using System.Net;
-   using System.Net.Http;
-   using System.Threading.Tasks;
-   using Banshee;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Banshee;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
+
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class request_and_response_events_are_extensible
    {
       private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
-      public request_and_response_events_are_extensible()
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          using (var webApi = new PingWebApi())
          using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
@@ -29,7 +31,7 @@ namespace Burble.Tests.instrumenting_scenarios
          }
       }
       
-      [Fact]
+      [Test]
       public void should_log_request_initiated()
       {
          var lastRequest = _callback.RequestsInitiated.Last();
@@ -37,7 +39,7 @@ namespace Burble.Tests.instrumenting_scenarios
          lastRequest.Tags["Key"].ShouldBe("HttpClientRequestInitiated");
       }
 
-      [Fact]
+      [Test]
       public void should_log_response_received()
       {
          var lastResponse = _callback.ResponsesReceived.Last();

@@ -1,19 +1,21 @@
-﻿namespace Burble.Tests.instrumenting_scenarios
-{
-   using System;
-   using System.Linq;
-   using System.Net.Http;
-   using Burble.Abstractions;
-   using Xunit;
-   using Shouldly;
+﻿using System;
+using System.Linq;
+using System.Net.Http;
+using Burble.Abstractions;
+using NUnit.Framework;
+using Shouldly;
 
+namespace Burble.Tests.instrumenting_scenarios
+{
    public class get_throws_exception
    {
-      private readonly Exception _exceptionThrown;
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
-      private readonly Exception _exception;
 
-      public get_throws_exception()
+      private Exception _exceptionThrown;
+      private Exception _exception;
+
+      [OneTimeSetUp]
+      public void setup_scenario()
       {
          _exceptionThrown = new Exception();
          var baseHttpClient = new ExceptionHttpClient(_exceptionThrown);
@@ -29,7 +31,7 @@
          }
       }
       
-      [Fact]
+      [Test]
       public void should_log_request_initiated()
       {
          var lastRequest = _callback.RequestsInitiated.Last();
@@ -39,19 +41,19 @@
          lastRequest.Method.ShouldBe("GET");
       }
 
-      [Fact]
+      [Test]
       public void should_not_log_response()
       {
          _callback.ResponsesReceived.ShouldBeEmpty();
       }
 
-      [Fact]
+      [Test]
       public void should_not_log_timeout_received()
       {
          _callback.TimeOuts.ShouldBeEmpty();
       }
 
-      [Fact]
+      [Test]
       public void should_log_exception_received()
       {
          var lastException = _callback.ExceptionsThrown.Last();
@@ -62,14 +64,14 @@
          lastException.Exception.ShouldBeSameAs(_exceptionThrown);
       }
       
-      [Fact]
+      [Test]
       public void should_throw_http_client_exception()
       {
          _exception.ShouldBeOfType<AggregateException>();
          _exception.InnerException.ShouldBeOfType<HttpClientException>();
       }
 
-      [Fact]
+      [Test]
       public void should_populate_http_client_exception()
       {
          var httpClientException = (HttpClientException)_exception.InnerException;
