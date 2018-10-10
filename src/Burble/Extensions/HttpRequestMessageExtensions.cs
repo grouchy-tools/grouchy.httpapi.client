@@ -1,8 +1,8 @@
-﻿namespace Burble
-{
-   using System;
-   using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 
+namespace Burble.Extensions
+{
    public static class HttpRequestMessageExtensions
    {
       public static string LocalRequestUri(this HttpRequestMessage request)

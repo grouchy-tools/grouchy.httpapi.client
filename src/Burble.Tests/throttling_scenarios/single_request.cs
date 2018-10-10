@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Threading;
 using Burble.Abstractions;
+using Burble.Abstractions.Extensions;
+using Burble.Extensions;
 using Burble.Throttling;
 using NUnit.Framework;
 using Shouldly;

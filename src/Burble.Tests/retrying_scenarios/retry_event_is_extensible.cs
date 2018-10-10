@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Burble.Abstractions;
+using Burble.Abstractions.Extensions;
+using Burble.Extensions;
 using NUnit.Framework;
 using Shouldly;
 
@@ -17,7 +18,7 @@ namespace Burble.Tests.retrying_scenarios
          var httpClient = baseHttpClient.AddRetrying(
             new StubRetryPredicate(1),
             new StubRetryDelay(10),
-            _callback);
+            new[]{_callback});
 
          try
          {

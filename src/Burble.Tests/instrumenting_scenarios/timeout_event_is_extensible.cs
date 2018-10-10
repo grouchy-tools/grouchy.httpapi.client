@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Banshee;
-using Burble.Abstractions;
+using Burble.Abstractions.Extensions;
 using NUnit.Framework;
 using Shouldly;
 

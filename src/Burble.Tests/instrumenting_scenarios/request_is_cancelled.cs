@@ -5,7 +5,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Banshee;
-using Burble.Abstractions;
+using Burble.Abstractions.Exceptions;
+using Burble.Abstractions.Extensions;
 using NUnit.Framework;
 using Shouldly;
 

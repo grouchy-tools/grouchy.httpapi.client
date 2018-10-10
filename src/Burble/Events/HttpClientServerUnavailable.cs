@@ -1,4 +1,6 @@
-﻿namespace Burble.Events
+﻿using Burble.Extensions;
+
+namespace Burble.Events
 {
    using System;
    using System.Collections.Generic;

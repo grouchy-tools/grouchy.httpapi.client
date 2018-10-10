@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-using Burble.Abstractions;
+using Burble.Abstractions.Exceptions;
+using Burble.Abstractions.Extensions;
+using Burble.Extensions;
 using NUnit.Framework;
 using Shouldly;
 
@@ -19,7 +21,7 @@ namespace Burble.Tests.instrumenting_scenarios
       {
          _exceptionThrown = new Exception();
          var baseHttpClient = new ExceptionHttpClient(_exceptionThrown);
-         var httpClient = baseHttpClient.AddInstrumenting(_callback);
+         var httpClient = baseHttpClient.AddInstrumenting(new []{_callback});
 
          try
          {

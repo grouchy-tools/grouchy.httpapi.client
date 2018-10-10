@@ -1,17 +1,20 @@
-﻿namespace Burble
-{
-   using System.Net.Http;
-   using Burble.Abstractions;
+﻿using System.Collections.Generic;
+using Burble.Abstractions;
+using Burble.HttpClients;
+using Burble.Retrying;
+using Burble.Throttling;
 
-   public static class HttpContextExtensions
+namespace Burble.Extensions
+{
+   public static class HttpClientExtensions
    {
       public static IHttpClient AddInstrumenting(
          this IHttpClient httpClient,
-         IHttpClientEventCallback callback)
+         IEnumerable<IHttpClientEventCallback> callbacks)
       {
          return new InstrumentingHttpClient(
             httpClient,
-            callback);
+            callbacks);
       }
 
       public static IHttpClient AddThrottling(
@@ -25,13 +28,13 @@
          this IHttpClient httpClient,
          IRetryPredicate retryPredicate,
          IRetryDelay retryDelay,
-         IHttpClientEventCallback callback)
+         IEnumerable<IHttpClientEventCallback> callbacks)
       {
          return new RetryingHttpClient(
             httpClient,
             retryPredicate,
             retryDelay,
-            callback);
+            callbacks);
       }
    }
 }

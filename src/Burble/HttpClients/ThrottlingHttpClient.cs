@@ -1,11 +1,12 @@
-﻿namespace Burble
-{
-   using System;
-   using System.Net.Http;
-   using System.Threading;
-   using System.Threading.Tasks;
-   using Burble.Abstractions;
+﻿using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Burble.Abstractions;
+using Burble.Throttling;
 
+namespace Burble.HttpClients
+{
    public class ThrottlingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;

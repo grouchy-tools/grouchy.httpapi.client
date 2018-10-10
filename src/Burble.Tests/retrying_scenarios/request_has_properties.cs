@@ -4,6 +4,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Burble.Abstractions;
+using Burble.Abstractions.Extensions;
+using Burble.Extensions;
 using NUnit.Framework;
 using Shouldly;
 
@@ -23,7 +25,7 @@ namespace Burble.Tests.retrying_scenarios
          var httpClient = _baseHttpClient.AddRetrying(
             new StubRetryPredicate(2),
             new StubRetryDelay(10),
-            _callback);
+            new []{_callback});
 
          var message = new HttpRequestMessage(HttpMethod.Get, "/get-content");
          message.Properties.Add("propertyA", "valueA");

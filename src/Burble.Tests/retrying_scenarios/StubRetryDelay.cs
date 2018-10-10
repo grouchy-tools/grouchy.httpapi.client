@@ -1,4 +1,4 @@
-﻿using Burble.Abstractions;
+﻿using Burble.Retrying;
 
 namespace Burble.Tests.retrying_scenarios
 {

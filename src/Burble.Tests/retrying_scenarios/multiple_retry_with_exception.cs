@@ -1,5 +1,7 @@
 ﻿using System;
-using Burble.Abstractions;
+using System.Threading.Tasks;
+using Burble.Abstractions.Extensions;
+using Burble.Extensions;
 using NUnit.Framework;
 using Shouldly;
 
@@ -15,18 +17,18 @@ namespace Burble.Tests.retrying_scenarios
       private Exception _caughtException;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
          _exceptionToThrow = new Exception();
          var baseHttpClient = new ExceptionHttpClient(_exceptionToThrow);
          var httpClient = baseHttpClient.AddRetrying(
             new StubRetryPredicate(ExpectedRetries),
             new StubRetryDelay(10),
-            _callback);
+            new[]{_callback});
 
          try
          {
-            httpClient.GetAsync("/ping").Wait();
+            await httpClient.GetAsync("/ping");
          }
          catch (Exception e)
          {
@@ -54,8 +56,7 @@ namespace Burble.Tests.retrying_scenarios
       [Test]
       public void should_throw_exception()
       {
-         _caughtException.ShouldBeOfType<AggregateException>();
-         _caughtException.InnerException.ShouldBeSameAs(_exceptionToThrow);
+         _caughtException.ShouldBeSameAs(_exceptionToThrow);
       }
    }
 }

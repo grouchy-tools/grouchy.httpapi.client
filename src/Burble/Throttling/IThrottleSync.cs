@@ -1,7 +1,7 @@
-﻿namespace Burble.Abstractions
-{
-   using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
+namespace Burble.Throttling
+{
    public interface IThrottleSync
    {
       Task WaitAsync();

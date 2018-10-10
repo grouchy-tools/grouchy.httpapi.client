@@ -1,30 +1,33 @@
-﻿namespace Burble
-{
-   using System;
-   using System.IO;
-   using System.Net.Http;
-   using System.Threading;
-   using System.Threading.Tasks;
-   using Burble.Abstractions;
-   using Burble.Events;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Burble.Abstractions;
+using Burble.Events;
+using Burble.Extensions;
+using Burble.Retrying;
 
+namespace Burble.HttpClients
+{
    public class RetryingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;
       private readonly IRetryPredicate _retryPredicate;
       private readonly IRetryDelay _retryDelay;
-      private readonly IHttpClientEventCallback _callback;
+      private readonly IEnumerable<IHttpClientEventCallback> _callbacks;
 
       public RetryingHttpClient(
          IHttpClient httpClient,
          IRetryPredicate retryPredicate,
          IRetryDelay retryDelay,
-         IHttpClientEventCallback callback)
+         IEnumerable<IHttpClientEventCallback> callbacks)
       {
          _httpClient = httpClient;
          _retryPredicate = retryPredicate;
          _retryDelay = retryDelay;
-         _callback = callback;
+         _callbacks = callbacks;
       }
 
       public Uri BaseAddress => _httpClient.BaseAddress;
@@ -65,7 +68,7 @@
                var delayMs = _retryDelay.DelayMs(retryAttempts);
                await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
 
-               _callback.Invoke(HttpClientRetryAttempt.Create(request, BaseAddress, retryAttempts));
+               _callbacks.Invoke(HttpClientRetryAttempt.Create(request, BaseAddress, retryAttempts));
             }
          }
          finally
@@ -80,11 +83,11 @@
       {
          var clone = new HttpRequestMessage(request.Method, request.RequestUri) { Version = request.Version };
 
-         // Copy the request's content (via a MemoryStream) into the cloned object
-         var ms = new MemoryStream();
-
          if (request.Content != null)
          {
+            // Copy the request's content (via a MemoryStream) into the cloned object
+            var ms = new MemoryStream();
+
             await request.Content.CopyToAsync(ms).ConfigureAwait(false);
 
             ms.Position = 0;

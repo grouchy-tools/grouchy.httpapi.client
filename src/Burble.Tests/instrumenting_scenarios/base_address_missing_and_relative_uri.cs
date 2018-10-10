@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Banshee;
-using Burble.Abstractions;
+using Burble.Abstractions.Extensions;
 using NUnit.Framework;
 using Shouldly;
 
@@ -12,7 +13,7 @@ namespace Burble.Tests.instrumenting_scenarios
       private Exception _requestException;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
          var callback = new StubHttpClientEventCallback();
 
@@ -23,7 +24,7 @@ namespace Burble.Tests.instrumenting_scenarios
 
             try
             {
-               httpClient.GetAsync("/ping").Wait();
+               await httpClient.GetAsync("/ping");
             }
             catch (Exception e)
             {
@@ -35,18 +36,16 @@ namespace Burble.Tests.instrumenting_scenarios
       [Test]
       public void should_throw_argument_exception()
       {
-         _requestException.ShouldBeOfType<AggregateException>();
-
-         _requestException.InnerException.ShouldBeOfType<ArgumentException>();
+         _requestException.ShouldBeOfType<ArgumentException>();
       }
 
       [Test]
       public void should_populate_argument_exception_message()
       {
-         var exception = (ArgumentException)_requestException.InnerException;
+         var exception = (ArgumentException)_requestException;
 
          exception.InnerException.ShouldBeNull();
-         exception.Message.ShouldBe("requestUri cannot be UriKind.Relative if BaseAddress has not been specified\r\nParameter name: request");
+         exception.Message.ShouldBe($"requestUri cannot be UriKind.Relative if BaseAddress has not been specified{Environment.NewLine}Parameter name: request");
       }
    }
 }

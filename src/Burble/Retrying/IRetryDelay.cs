@@ -1,4 +1,4 @@
-﻿namespace Burble.Abstractions
+﻿namespace Burble.Retrying
 {
    public interface IRetryDelay
    {
