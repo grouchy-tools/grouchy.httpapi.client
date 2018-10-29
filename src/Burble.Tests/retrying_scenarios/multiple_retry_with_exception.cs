@@ -7,6 +7,7 @@ using Shouldly;
 
 namespace Burble.Tests.retrying_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class multiple_retry_with_exception
    {
       private const int ExpectedRetries = 3;
@@ -20,10 +21,10 @@ namespace Burble.Tests.retrying_scenarios
       public async Task setup_scenario()
       {
          _exceptionToThrow = new Exception();
-         var baseHttpClient = new ExceptionHttpClient(_exceptionToThrow);
+         var baseHttpClient = new StubHttpClient(_exceptionToThrow);
+         var configuration = new RetryingConfiguration(retries: ExpectedRetries, delayMs: 10);
          var httpClient = baseHttpClient.AddRetrying(
-            new StubRetryPredicate(ExpectedRetries),
-            new StubRetryDelay(10),
+            configuration,
             new[]{_callback});
 
          try

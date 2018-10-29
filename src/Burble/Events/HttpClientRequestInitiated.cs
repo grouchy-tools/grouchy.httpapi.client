@@ -1,12 +1,10 @@
-﻿using Burble.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using Burble.Abstractions;
 
 namespace Burble.Events
 {
-   using System;
-   using System.Collections.Generic;
-   using System.Net.Http;
-   using Burble.Abstractions;
-
    public class HttpClientRequestInitiated : IHttpClientEvent
    {
       public string EventType => nameof(HttpClientRequestInitiated);
@@ -26,7 +24,7 @@ namespace Burble.Events
          return new HttpClientRequestInitiated
          {
             Timestamp = DateTimeOffset.UtcNow,
-            Uri = request.AbsoluteRequestUri(baseAddress).ToString(),
+            Uri = new Uri(baseAddress, request.RequestUri).ToString(),
             Request = request
          };
       }

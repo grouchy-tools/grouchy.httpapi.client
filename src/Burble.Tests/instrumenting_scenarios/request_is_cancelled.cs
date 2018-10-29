@@ -18,6 +18,7 @@ using Shouldly;
 
 namespace Burble.Tests.instrumenting_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class request_is_cancelled
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -26,18 +27,16 @@ namespace Burble.Tests.instrumenting_scenarios
       private Exception _timeoutException;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task  setup_scenario()
       {
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
+         using (var httpClient = webApi.CreateClientWithInstrumenting(_callback))
          {
             _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
 
-            var httpClient = baseHttpClient.AddInstrumenting(_callback);
-
             try
             {
-               httpClient.GetAsync("/ping", new CancellationTokenSource(TimeSpan.FromMilliseconds(20)).Token).Wait();
+               await httpClient.GetAsync("/ping", new CancellationTokenSource(TimeSpan.FromMilliseconds(20)).Token);
             }
             catch (Exception e)
             {
@@ -75,10 +74,7 @@ namespace Burble.Tests.instrumenting_scenarios
       [Test]
       public void should_throw_http_client_timeout_exception()
       {
-         _timeoutException.ShouldBeOfType<AggregateException>();
-
-         var innerException = _timeoutException.InnerException;
-         innerException.ShouldBeOfType<HttpClientTimeoutException>();
+         _timeoutException.ShouldBeOfType<HttpClientTimeoutException>();
       }
 
       private class PingWebApi : StubWebApiHost

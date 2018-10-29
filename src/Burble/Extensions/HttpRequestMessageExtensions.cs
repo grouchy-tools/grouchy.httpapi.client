@@ -21,16 +21,5 @@ namespace Burble.Extensions
 
          return "/" + uri;
       }
-
-      public static Uri AbsoluteRequestUri(this HttpRequestMessage request, Uri baseAddress)
-      {
-         if (request.RequestUri.IsAbsoluteUri)
-         {
-            return request.RequestUri;
-         }
-
-         var uri = new Uri(baseAddress, request.RequestUri);
-         return uri;
-      }
    }
 }

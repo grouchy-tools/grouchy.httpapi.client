@@ -1,14 +1,15 @@
-﻿namespace Burble.Throttling
-{
-   using System.Threading;
-   using System.Threading.Tasks;
-   using Burble.Abstractions;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Burble.Abstractions.Throttling;
 
-   public class SemaphoneThrottleSync : IThrottleSync
+namespace Burble.Throttling
+{
+   // TODO: Should support IDisposable
+   public class SemaphoreThrottleSync : IThrottleSync
    {
       private readonly SemaphoreSlim _semaphore;
 
-      public SemaphoneThrottleSync(int concurrentRequests)
+      public SemaphoreThrottleSync(int concurrentRequests)
       {
          _semaphore = new SemaphoreSlim(concurrentRequests);
       }

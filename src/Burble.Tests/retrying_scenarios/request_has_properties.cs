@@ -11,6 +11,7 @@ using Shouldly;
 
 namespace Burble.Tests.retrying_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class request_has_properties
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -18,13 +19,13 @@ namespace Burble.Tests.retrying_scenarios
       private StubHttpClient _baseHttpClient;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
          _baseHttpClient = new StubHttpClient();
 
+         var configuration = new RetryingConfiguration(retries: 2, delayMs: 10);
          var httpClient = _baseHttpClient.AddRetrying(
-            new StubRetryPredicate(2),
-            new StubRetryDelay(10),
+            configuration,
             new []{_callback});
 
          var message = new HttpRequestMessage(HttpMethod.Get, "/get-content");
@@ -33,7 +34,7 @@ namespace Burble.Tests.retrying_scenarios
 
          try
          {
-            httpClient.SendAsync(message).Wait();
+            await httpClient.SendAsync(message);
          }
          catch
          {
@@ -58,13 +59,6 @@ namespace Burble.Tests.retrying_scenarios
       private class StubHttpClient : IHttpClient
       {
          public IList<HttpRequestMessage> Requests { get; } = new List<HttpRequestMessage>();
-
-         public Uri BaseAddress => new Uri("http://stub-host");
-
-         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
-         {
-            return SendAsync(request, CancellationToken.None);
-         }
 
          public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
          {

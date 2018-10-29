@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Banshee;
 using Burble.Abstractions.Extensions;
@@ -15,6 +14,7 @@ using Shouldly;
 
 namespace Burble.Tests.retrying_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class multiple_retry_with_timeout
    {
       private const int ExpectedRetries = 3;
@@ -25,21 +25,16 @@ namespace Burble.Tests.retrying_scenarios
       private Exception _exception;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(10) })
+         using (var httpClient = webApi.CreateClientWithRetrying(_callback, retries: ExpectedRetries, delayMs: 10, timeoutMs: 10))
          {
             _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
 
-            var httpClient = baseHttpClient.AddRetrying(
-               new StubRetryPredicate(ExpectedRetries),
-               new StubRetryDelay(10),
-               _callback);
-
             try
             {
-               httpClient.GetAsync("/ping").Wait();
+               await httpClient.GetAsync("/ping");
             }
             catch (Exception e)
             {
@@ -68,10 +63,7 @@ namespace Burble.Tests.retrying_scenarios
       [Test]
       public void should_throw_task_cancelled_exception()
       {
-         _exception.ShouldBeOfType<AggregateException>();
-
-         var innerException = _exception.InnerException;
-         innerException.ShouldBeOfType<TaskCanceledException>();
+         _exception.ShouldBeOfType<TaskCanceledException>();
       }
 
       private class PingWebApi : StubWebApiHost

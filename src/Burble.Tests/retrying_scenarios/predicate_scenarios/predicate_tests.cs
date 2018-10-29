@@ -6,9 +6,9 @@ using Shouldly;
 
 namespace Burble.Tests.retrying_scenarios.predicate_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class predicate_tests
    {
-      
       [TestCase(HttpStatusCode.Continue)]
       [TestCase(HttpStatusCode.SwitchingProtocols)]
       [TestCase(199)]

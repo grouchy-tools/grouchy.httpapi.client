@@ -1,39 +1,36 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Burble.Abstractions;
-using Burble.Throttling;
+using Burble.Abstractions.Configuration;
 
 namespace Burble.HttpClients
 {
    public class ThrottlingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;
-      private readonly IThrottleSync _throttleSync;
+      private readonly IHttpApiWithThrottling _httpApiWithThrottling;
 
       public ThrottlingHttpClient(
          IHttpClient httpClient,
-         IThrottleSync throttleSync)
+         IHttpApiWithThrottling httpApiWithThrottling)
       {
          _httpClient = httpClient;
-         _throttleSync = throttleSync;
+         _httpApiWithThrottling = httpApiWithThrottling;
       }
-
-      public Uri BaseAddress => _httpClient.BaseAddress;
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
          try
          {
-            await _throttleSync.WaitAsync().ConfigureAwait(false);
+            await _httpApiWithThrottling.ThrottleSync.WaitAsync().ConfigureAwait(false);
 
             var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
             return response;
          }
          finally
          {
-            _throttleSync.Release();
+            _httpApiWithThrottling.ThrottleSync.Release();
          }
       }
    }

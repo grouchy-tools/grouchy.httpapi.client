@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Burble.Abstractions.Exceptions;
 using Burble.Abstractions.Extensions;
 using Burble.Extensions;
@@ -9,6 +10,7 @@ using Shouldly;
 
 namespace Burble.Tests.instrumenting_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class get_throws_exception
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -17,15 +19,16 @@ namespace Burble.Tests.instrumenting_scenarios
       private Exception _exception;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task  setup_scenario()
       {
          _exceptionThrown = new Exception();
-         var baseHttpClient = new ExceptionHttpClient(_exceptionThrown);
-         var httpClient = baseHttpClient.AddInstrumenting(new []{_callback});
+         var baseHttpClient = new StubHttpClient(_exceptionThrown);
+         var configuration = new InstrumentingConfiguration {Uri = new Uri("http://exception-host")};
+         var httpClient = baseHttpClient.AddInstrumenting(configuration, new []{_callback});
 
          try
          {
-            httpClient.GetAsync("/ping").Wait();
+            await httpClient.GetAsync("/ping");
          }
          catch (Exception e)
          {
@@ -69,14 +72,13 @@ namespace Burble.Tests.instrumenting_scenarios
       [Test]
       public void should_throw_http_client_exception()
       {
-         _exception.ShouldBeOfType<AggregateException>();
-         _exception.InnerException.ShouldBeOfType<HttpClientException>();
+         _exception.ShouldBeOfType<HttpClientException>();
       }
 
       [Test]
       public void should_populate_http_client_exception()
       {
-         var httpClientException = (HttpClientException)_exception.InnerException;
+         var httpClientException = (HttpClientException)_exception;
 
          httpClientException.InnerException.ShouldBeSameAs(_exceptionThrown);
          httpClientException.RequestUri.ShouldBe(new Uri("http://exception-host/ping"));

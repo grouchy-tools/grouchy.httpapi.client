@@ -14,6 +14,7 @@ using Shouldly;
 
 namespace Burble.Tests.retrying_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class success_so_no_retry
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -21,17 +22,12 @@ namespace Burble.Tests.retrying_scenarios
       private HttpResponseMessage _response;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
-         using (var webApi = new success_so_no_retry.PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
+         using (var webApi = new PingWebApi())
+         using (var httpClient = webApi.CreateClientWithRetrying(_callback, retries: 3, delayMs: 10))
          {
-            var httpClient = baseHttpClient.AddRetrying(
-               new StubRetryPredicate(3),
-               new StubRetryDelay(10),
-               _callback);
-
-            _response = httpClient.GetAsync("/ping").Result;
+            _response = await httpClient.GetAsync("/ping");
          }
       }
 
@@ -48,9 +44,9 @@ namespace Burble.Tests.retrying_scenarios
       }
 
       [Test]
-      public void should_return_content()
+      public async Task should_return_content()
       {
-         var content = _response.Content.ReadAsStringAsync().Result;
+         var content = await _response.Content.ReadAsStringAsync();
 
          content.ShouldBe("pong");
       }

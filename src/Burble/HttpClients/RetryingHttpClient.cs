@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Burble.Abstractions;
+using Burble.Abstractions.Configuration;
 using Burble.Events;
 using Burble.Extensions;
 using Burble.Retrying;
@@ -14,23 +15,18 @@ namespace Burble.HttpClients
    public class RetryingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;
-      private readonly IRetryPredicate _retryPredicate;
-      private readonly IRetryDelay _retryDelay;
+      private readonly IHttpApiWithRetrying _httpApiWithRetrying;
       private readonly IEnumerable<IHttpClientEventCallback> _callbacks;
 
       public RetryingHttpClient(
          IHttpClient httpClient,
-         IRetryPredicate retryPredicate,
-         IRetryDelay retryDelay,
+         IHttpApiWithRetrying httpApiWithRetrying,
          IEnumerable<IHttpClientEventCallback> callbacks)
       {
          _httpClient = httpClient;
-         _retryPredicate = retryPredicate;
-         _retryDelay = retryDelay;
+         _httpApiWithRetrying = httpApiWithRetrying;
          _callbacks = callbacks;
       }
-
-      public Uri BaseAddress => _httpClient.BaseAddress;
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
@@ -55,7 +51,7 @@ namespace Burble.HttpClients
 
                retryAttempts++;
 
-               if (!_retryPredicate.ShouldRetry(retryAttempts, response))
+               if (!_httpApiWithRetrying.RetryPredicate.ShouldRetry(retryAttempts, response))
                {
                   if (exception != null)
                   {
@@ -65,10 +61,10 @@ namespace Burble.HttpClients
                   return response;
                }
 
-               var delayMs = _retryDelay.DelayMs(retryAttempts);
+               var delayMs = _httpApiWithRetrying.RetryDelay.DelayMs(retryAttempts);
                await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
 
-               _callbacks.Invoke(HttpClientRetryAttempt.Create(request, BaseAddress, retryAttempts));
+               _callbacks.Invoke(HttpClientRetryAttempt.Create(request, _httpApiWithRetrying.Uri, retryAttempts));
             }
          }
          finally

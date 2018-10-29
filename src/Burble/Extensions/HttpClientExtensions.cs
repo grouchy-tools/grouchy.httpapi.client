@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using Burble.Abstractions;
+using Burble.Abstractions.CircuitBreaking;
+using Burble.Abstractions.Configuration;
+using Burble.Abstractions.Identifying;
 using Burble.HttpClients;
-using Burble.Retrying;
-using Burble.Throttling;
 
 namespace Burble.Extensions
 {
@@ -10,31 +12,54 @@ namespace Burble.Extensions
    {
       public static IHttpClient AddInstrumenting(
          this IHttpClient httpClient,
+         IHttpApiWithInstrumenting httpApiWithInstrumenting,
          IEnumerable<IHttpClientEventCallback> callbacks)
       {
          return new InstrumentingHttpClient(
             httpClient,
+            httpApiWithInstrumenting,
             callbacks);
       }
 
+      public static IHttpClient AddCircuitBreaking(
+         this IHttpClient httpClient,
+         IHttpApiWithCircuitBreaking httpApiWithCircuitBreaking,
+         ICircuitBreakingStateManager<HttpStatusCode> circuitBreakingStateManager)
+      {
+         return new CircuitBreakingHttpClient(
+            httpClient,
+            circuitBreakingStateManager.Get(httpApiWithCircuitBreaking));
+      }
+      
       public static IHttpClient AddThrottling(
          this IHttpClient httpClient,
-         IThrottleSync throttleSync)
+         IHttpApiWithThrottling httpApiWithThrottling)
       {
-         return new ThrottlingHttpClient(httpClient, throttleSync);
+         return new ThrottlingHttpClient(httpClient, httpApiWithThrottling);
       }
 
       public static IHttpClient AddRetrying(
          this IHttpClient httpClient,
-         IRetryPredicate retryPredicate,
-         IRetryDelay retryDelay,
+         IHttpApiWithRetrying httpApiWithRetrying,
          IEnumerable<IHttpClientEventCallback> callbacks)
       {
          return new RetryingHttpClient(
             httpClient,
-            retryPredicate,
-            retryDelay,
+            httpApiWithRetrying,
             callbacks);
+      }
+      
+      public static IHttpClient AddIdentifyingHeaders(
+         this IHttpClient httpClient,
+         IGetCorrelationId correlationIdGetter,
+         IGenerateGuids guidGenerator,
+         IApplicationInfo applicationInfo)
+      {
+         return new IdentifyingHttpClient(
+            httpClient,
+            correlationIdGetter,
+            guidGenerator,
+            applicationInfo);
       }
    }
 }

@@ -18,6 +18,7 @@ using Shouldly;
 
 namespace Burble.Tests.retrying_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class request_has_content_and_content_headers
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -25,24 +26,19 @@ namespace Burble.Tests.retrying_scenarios
       private string _content;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       { 
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(100000) })
+         using (var httpClient = webApi.CreateClientWithRetrying(_callback, retries: 1, delayMs: 10, timeoutMs: 100000))
          {
-            var httpClient = baseHttpClient.AddRetrying(
-               new StubRetryPredicate(1),
-               new StubRetryDelay(10),
-               _callback);
-
             var message = new HttpRequestMessage(HttpMethod.Post, "/get-content");
 
             message.Content = new StringContent("{\"contentA\":\"valueA\",\"contentB\":\"valueB\"}");
             message.Content.Headers.Add("headerC", "valueC");
             message.Content.Headers.Add("headerD", "valueD");
 
-            var response = httpClient.SendAsync(message).Result;
-            _content = response.Content.ReadAsStringAsync().Result;
+            var response = await httpClient.SendAsync(message);
+            _content = await response.Content.ReadAsStringAsync();
             Console.WriteLine(_content);
          }
       }

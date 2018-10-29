@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Banshee;
 using Burble.Abstractions.Extensions;
+using Burble.Extensions;
 using NUnit.Framework;
 using Shouldly;
 
@@ -17,6 +18,7 @@ using Shouldly;
 
 namespace Burble.Tests.instrumenting_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class instrumenting_get_request
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -24,16 +26,14 @@ namespace Burble.Tests.instrumenting_scenarios
       private string _eventUri;
       private HttpResponseMessage _response;
 
-      private void act(string uri, string eventUri)
+      private async Task act(string uri, string eventUri)
       {
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
+         using (var httpClient = webApi.CreateClientWithInstrumenting(_callback))
          {
             _eventUri = new Uri(webApi.BaseUri, eventUri).ToString();
 
-            var httpClient = baseHttpClient.AddInstrumenting(_callback);
-
-            _response = httpClient.GetAsync(uri).Result;
+            _response = await httpClient.GetAsync(uri);
          }
       }
 
@@ -44,27 +44,27 @@ namespace Burble.Tests.instrumenting_scenarios
       };
 
       [TestCaseSource(nameof(TestData))]
-      public void should_return_status_code_200(string uri, string eventUri)
+      public async Task should_return_status_code_200(string uri, string eventUri)
       {
-         act(uri, eventUri);
+         await act(uri, eventUri);
 
          _response.StatusCode.ShouldBe(HttpStatusCode.OK);
       }
 
       [TestCaseSource(nameof(TestData))]
-      public void should_return_content(string uri, string eventUri)
+      public async Task should_return_content(string uri, string eventUri)
       {
-         act(uri, eventUri);
+         await act(uri, eventUri);
 
-         var content = _response.Content.ReadAsStringAsync().Result;
+         var content = await _response.Content.ReadAsStringAsync();
 
          content.ShouldBe("pong");
       }
 
       [TestCaseSource(nameof(TestData))]
-      public void should_log_request_initiated(string uri, string eventUri)
+      public async Task should_log_request_initiated(string uri, string eventUri)
       {
-         act(uri, eventUri);
+         await act(uri, eventUri);
 
          var lastRequest = _callback.RequestsInitiated.Last();
          lastRequest.ShouldNotBeNull();
@@ -74,9 +74,9 @@ namespace Burble.Tests.instrumenting_scenarios
       }
 
       [TestCaseSource(nameof(TestData))]
-      public void should_log_response_received(string uri, string eventUri)
+      public async Task should_log_response_received(string uri, string eventUri)
       {
-         act(uri, eventUri);
+         await act(uri, eventUri);
 
          var lastResponse = _callback.ResponsesReceived.Last();
          lastResponse.ShouldNotBeNull();
