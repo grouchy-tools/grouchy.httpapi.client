@@ -14,9 +14,9 @@ namespace Burble.Tests
 {
    public static class StubWebApiHostExtensions
    {
-      public static DefaultHttpClient CreateClient(this StubWebApiHost host)
+      public static DefaultHttpClient CreateClient(this StubWebApiHost host, int timeoutMs = 3000)
       {
-         var configuration = new HttpApiConfiguration { Uri = host.BaseUri };
+         var configuration = new HttpApiConfiguration { Uri = host.BaseUri, TimeoutMs = timeoutMs };
          return new DefaultHttpClient(configuration);
       }
 
