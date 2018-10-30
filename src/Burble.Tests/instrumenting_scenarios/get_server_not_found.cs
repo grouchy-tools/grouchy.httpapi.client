@@ -40,7 +40,7 @@ namespace Burble.Tests.instrumenting_scenarios
          _absoluteUri = absoluteUri;
          _exceptionMessage = exceptionMessage;
 
-         var configuration = new InstrumentingConfiguration {Uri = new Uri(baseAddress)};
+         var configuration = new InstrumentingConfiguration {Uri = new Uri(baseAddress), TimeoutMs = 60000 };
          
          using (var baseHttpClient = new DefaultHttpClient(configuration))
          {

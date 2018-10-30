@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Banshee;
 using Burble.Abstractions;
-using Burble.Abstractions.Configuration;
 using Burble.Extensions;
 using Burble.HttpClients;
 using Burble.Tests.adapter_scenarios;

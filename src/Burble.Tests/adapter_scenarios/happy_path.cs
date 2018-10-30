@@ -3,13 +3,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Banshee;
 using Burble.Abstractions.Extensions;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using Shouldly;
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
-
+   using Microsoft.AspNetCore.Http;
 #endif
 
 namespace Burble.Tests.adapter_scenarios

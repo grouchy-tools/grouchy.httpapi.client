@@ -11,23 +11,23 @@ namespace Burble.CircuitBreaking
    public class CircuitBreakingStateManager<TResponse> : ICircuitBreakingStateManager<TResponse>, IDisposable
    {
       private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
-      private readonly ConcurrentDictionary<ICircuitBreakingConfiguration<TResponse>, (ICircuitBreakingState<TResponse>, Task)> _cache = new ConcurrentDictionary<ICircuitBreakingConfiguration<TResponse>, (ICircuitBreakingState<TResponse>, Task)>();
+      private readonly ConcurrentDictionary<ICircuitBreakingConfiguration<TResponse>, Entry> _cache = new ConcurrentDictionary<ICircuitBreakingConfiguration<TResponse>, Entry>();
 
       private bool _isDisposed;
       
       public ICircuitBreakingState<TResponse> Get(ICircuitBreakingConfiguration<TResponse> configuration)
       {
-         var (circuitBreakingState, _) = _cache.GetOrAdd(configuration, Create);
+         var foo = _cache.GetOrAdd(configuration, Create);
 
-         return circuitBreakingState;
+         return foo.CircuitBreakingState;
       }
 
-      private (ICircuitBreakingState<TResponse>, Task) Create(ICircuitBreakingConfiguration<TResponse> configuration)
+      private Entry Create(ICircuitBreakingConfiguration<TResponse> configuration)
       {
          var circuitBreakingState = new CircuitBreakingState<TResponse>(configuration);
          var task = Task.Run(() => circuitBreakingState.MonitorAsync(_stoppingCts.Token));
 
-         return (circuitBreakingState, task);
+         return new Entry(circuitBreakingState, task);
       }
 
       public async Task StopMonitoringAsync(CancellationToken cancellationToken)
@@ -39,7 +39,7 @@ namespace Burble.CircuitBreaking
          }
          finally
          {
-            var waitForAllTasks = Task.WhenAll(_cache.Select(c => c.Value.Item2));
+            var waitForAllTasks = Task.WhenAll(_cache.Select(c => c.Value.Task));
             
             // Wait until all tasks complete or the stop token triggers
             await Task.WhenAny(waitForAllTasks, Task.Delay(Timeout.Infinite, cancellationToken));
@@ -52,6 +52,20 @@ namespace Burble.CircuitBreaking
 
          _stoppingCts?.Dispose();
          _isDisposed = true;
+      }
+
+      // Implicit tuple does not seem to be available for net451
+      private class Entry
+      {
+         public Entry(ICircuitBreakingState<TResponse> circuitBreakingState, Task task)
+         {
+            CircuitBreakingState = circuitBreakingState;
+            Task = task;
+         }
+
+         public readonly ICircuitBreakingState<TResponse> CircuitBreakingState;
+
+         public readonly Task Task;
       }
    }
 }

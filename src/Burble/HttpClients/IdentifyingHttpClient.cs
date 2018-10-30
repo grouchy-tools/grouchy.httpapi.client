@@ -1,11 +1,9 @@
 using System;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Burble.Abstractions;
 using Burble.Abstractions.Identifying;
-using Microsoft.Net.Http.Headers;
 
 namespace Burble.HttpClients
 {
@@ -14,6 +12,8 @@ namespace Burble.HttpClients
    /// </summary>
    public class IdentifyingHttpClient : IHttpClient
    {
+      private const string UserAgentHeader = "User-Agent";
+
       private readonly IHttpClient _httpClient;
       private readonly IGetCorrelationId _correlationIdGetter;
       private readonly IGenerateGuids _guidGenerator;
@@ -36,7 +36,7 @@ namespace Burble.HttpClients
 
       public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
-         request.Headers.Add(HeaderNames.UserAgent, _userAgent);
+         request.Headers.Add(UserAgentHeader, _userAgent);
          request.Headers.Add("correlation-id", _correlationIdGetter.Get());
          request.Headers.Add("request-id", _guidGenerator.Generate().ToString());
 
