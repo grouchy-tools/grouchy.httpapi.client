@@ -5,30 +5,26 @@ using Banshee;
 using Burble.Abstractions.Extensions;
 using NUnit.Framework;
 using Shouldly;
-
 #if NET451
    using HttpContext = Microsoft.Owin.IOwinContext;
 #else
    using Microsoft.AspNetCore.Http;
 #endif
 
-namespace Burble.Tests.instrumenting_scenarios
+namespace Burble.Tests.adapter_scenarios
 {
-   public class base_address_missing_and_absolute_uri
+   // ReSharper disable once InconsistentNaming
+   public class happy_path
    {
       private HttpResponseMessage _response;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
-         var callback = new StubHttpClientEventCallback();
-
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient())
+         using (var httpClient = webApi.CreateClient())
          {
-            var httpClient = baseHttpClient.AddInstrumenting(callback);
-
-            _response = httpClient.GetAsync(webApi.BaseUri + "ping").Result;
+            _response = await httpClient.GetAsync("/ping");
          }
       }
       
@@ -39,9 +35,9 @@ namespace Burble.Tests.instrumenting_scenarios
       }
 
       [Test]
-      public void should_return_content()
+      public async Task should_return_content()
       {
-         var content = _response.Content.ReadAsStringAsync().Result;
+         var content = await _response.Content.ReadAsStringAsync();
 
          content.ShouldBe("pong");
       }

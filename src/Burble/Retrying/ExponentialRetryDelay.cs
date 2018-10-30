@@ -1,8 +1,8 @@
-﻿namespace Burble.Retrying
-{
-   using System;
-   using Burble.Abstractions;
+﻿using System;
+using Burble.Abstractions.Retrying;
 
+namespace Burble.Retrying
+{
    public class ExponentialRetryDelay : IRetryDelay
    {
       private readonly int _initialDelayMs;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Burble.Abstractions.Extensions;
 using Burble.Extensions;
 using NUnit.Framework;
@@ -7,22 +8,23 @@ using Shouldly;
 
 namespace Burble.Tests.retrying_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class retry_event_is_extensible
    {
       private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
-         var baseHttpClient = new ExceptionHttpClient(new Exception());
+         var baseHttpClient = new StubHttpClient(new Exception());
+         var configuration = new RetryingConfiguration(retries: 1, delayMs: 10);
          var httpClient = baseHttpClient.AddRetrying(
-            new StubRetryPredicate(1),
-            new StubRetryDelay(10),
+            configuration,
             new[]{_callback});
 
          try
          {
-            httpClient.GetAsync("/ping").Wait();
+            await httpClient.GetAsync("/ping");
          }
          catch
          {

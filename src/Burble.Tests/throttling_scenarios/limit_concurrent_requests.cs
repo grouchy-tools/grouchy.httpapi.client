@@ -13,6 +13,7 @@ using Shouldly;
 
 namespace Burble.Tests.throttling_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class limit_concurrent_requests
    {
       private CountingHttpClient _baseHttpClient;
@@ -24,7 +25,8 @@ namespace Burble.Tests.throttling_scenarios
       public void setup_scenario()
       {
          _baseHttpClient = new CountingHttpClient();
-         var httpClient = _baseHttpClient.AddThrottling(new SemaphoneThrottleSync(ExpectedMaxConcurrentRequests));
+         var configuration = new ThrottlingConfiguration(ExpectedMaxConcurrentRequests);
+         var httpClient = _baseHttpClient.AddThrottling(configuration);
 
          var tasks = Enumerable.Range(1, ExpectedTotalRequests).Select(c => httpClient.GetAsync("/ping")).ToArray();
          Task.WhenAll(tasks).Wait(5000);
@@ -52,11 +54,6 @@ namespace Burble.Tests.throttling_scenarios
          public int MaxConcurrentRequests { get; private set; }
 
          public int TotalRequests { get; private set; }
-
-         public Uri BaseAddress
-         {
-            get { throw new NotImplementedException(); }
-         }
 
          public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
          {

@@ -16,21 +16,20 @@ using Shouldly;
 
 namespace Burble.Tests.instrumenting_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class timeout_event_is_extensible
    {
       private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient {BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50)})
+         using (var httpClient = webApi.CreateClientWithInstrumenting(_callback, timeoutMs: 50))
          {
-            var httpClient = baseHttpClient.AddInstrumenting(_callback);
-
             try
             {
-               httpClient.GetAsync("/ping").Wait();
+               await httpClient.GetAsync("/ping");
             }
             catch
             {

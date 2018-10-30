@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Xml;
 using Banshee;
 using Burble.Abstractions.Exceptions;
 using Burble.Abstractions.Extensions;
+using Burble.Extensions;
+using Burble.HttpClients;
 using NUnit.Framework;
 using Shouldly;
 
 namespace Burble.Tests.instrumenting_scenarios
 {
    // TODO: These are really slow - they were taking over 2 minutes for both frameworks before this hacky approach
+   // ReSharper disable once InconsistentNaming
    public class get_server_not_found
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -24,9 +28,7 @@ namespace Burble.Tests.instrumenting_scenarios
       public static IEnumerable<object[]> TestData { get; } = new[]
       {
          new object[] { "GET", "http://fail", "/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping" },
-         new object[] { "GET", null, "http://fail/ping", "http://fail/ping", "Server unavailable, GET http://fail/ping" },
          new object[] { "HEAD", "http://fail", "/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping" },
-         new object[] { "HEAD", null, "http://fail/ping", "http://fail/ping", "Server unavailable, HEAD http://fail/ping" },
          new object[] { "GET", "http://localhost:9010", "/status", "http://localhost:9010/status", "Server unavailable, GET http://localhost:9010/status" }
       };
 
@@ -37,11 +39,12 @@ namespace Burble.Tests.instrumenting_scenarios
          _method = method;
          _absoluteUri = absoluteUri;
          _exceptionMessage = exceptionMessage;
+
+         var configuration = new InstrumentingConfiguration {Uri = new Uri(baseAddress), TimeoutMs = 3000 };
          
-         using (new StubWebApiHost())
-         using (var baseHttpClient = new HttpClient { BaseAddress = baseAddress != null ? new Uri(baseAddress) : null })
+         using (var baseHttpClient = new DefaultHttpClient(configuration))
          {
-            var httpClient = baseHttpClient.AddInstrumenting(_callback);
+            var httpClient = baseHttpClient.AddInstrumenting(configuration, new[]{_callback});
             var message = new HttpRequestMessage(new HttpMethod(method), requestUri);
 
             try

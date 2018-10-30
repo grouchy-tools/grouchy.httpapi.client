@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Burble.Abstractions;
+using Burble.Abstractions.Configuration;
 using Burble.Abstractions.Exceptions;
 using Burble.Events;
 using Burble.Extensions;
@@ -14,26 +15,22 @@ namespace Burble.HttpClients
    public class InstrumentingHttpClient : IHttpClient
    {
       private readonly IHttpClient _httpClient;
+      private readonly IHttpApiWithInstrumenting _httpApiWithInstrumenting;
       private readonly IEnumerable<IHttpClientEventCallback> _callbacks;
 
       public InstrumentingHttpClient(
          IHttpClient httpClient,
+         IHttpApiWithInstrumenting httpApiWithInstrumenting,
          IEnumerable<IHttpClientEventCallback> callbacks)
       {
          _httpClient = httpClient;
+         _httpApiWithInstrumenting = httpApiWithInstrumenting;
          _callbacks = callbacks;
       }
 
-      public Uri BaseAddress => _httpClient.BaseAddress;
-
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
-         if (BaseAddress == null && !request.RequestUri.IsAbsoluteUri)
-         {
-            throw new ArgumentException("requestUri cannot be UriKind.Relative if BaseAddress has not been specified", nameof(request));
-         }
-
-         _callbacks.Invoke(HttpClientRequestInitiated.Create(request, BaseAddress));
+         _callbacks.Invoke(HttpClientRequestInitiated.Create(request, _httpApiWithInstrumenting.Uri));
 
          var stopwatch = Stopwatch.StartNew();
 
@@ -44,21 +41,21 @@ namespace Burble.HttpClients
          }
          catch (TaskCanceledException)
          {
-            _callbacks.Invoke(HttpClientTimedOut.Create(request, BaseAddress, stopwatch.ElapsedMilliseconds));
-            throw new HttpClientTimeoutException(request.Method, request.AbsoluteRequestUri(BaseAddress));
+            _callbacks.Invoke(HttpClientTimedOut.Create(request, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds));
+            throw new HttpClientTimeoutException(request.Method, new Uri(_httpApiWithInstrumenting.Uri, request.RequestUri));
          }
          catch (HttpRequestException e) when (IsServerUnavailable(e))
          {
-            _callbacks.Invoke(HttpClientServerUnavailable.Create(request, BaseAddress, stopwatch.ElapsedMilliseconds));
-            throw new HttpClientServerUnavailableException(request.Method, request.AbsoluteRequestUri(BaseAddress));
+            _callbacks.Invoke(HttpClientServerUnavailable.Create(request, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds));
+            throw new HttpClientServerUnavailableException(request.Method, new Uri(_httpApiWithInstrumenting.Uri, request.RequestUri));
          }
          catch (Exception e)
          {
-            _callbacks.Invoke(HttpClientExceptionThrown.Create(request, BaseAddress, stopwatch.ElapsedMilliseconds, e));
-            throw new HttpClientException(request.Method, request.AbsoluteRequestUri(BaseAddress), e);
+            _callbacks.Invoke(HttpClientExceptionThrown.Create(request, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds, e));
+            throw new HttpClientException(request.Method, new Uri(_httpApiWithInstrumenting.Uri, request.RequestUri), e);
          }
 
-         _callbacks.Invoke(HttpClientResponseReceived.Create(response, BaseAddress, stopwatch.ElapsedMilliseconds));
+         _callbacks.Invoke(HttpClientResponseReceived.Create(response, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds));
 
          return response;
       }

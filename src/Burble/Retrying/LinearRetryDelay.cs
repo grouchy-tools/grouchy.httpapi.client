@@ -1,7 +1,7 @@
-﻿namespace Burble.Retrying
-{
-   using Burble.Abstractions;
+﻿using Burble.Abstractions.Retrying;
 
+namespace Burble.Retrying
+{
    public class LinearRetryDelay : IRetryDelay
    {
       private readonly int _delayMs;

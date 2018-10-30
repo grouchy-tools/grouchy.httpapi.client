@@ -1,12 +1,10 @@
-﻿using Burble.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using Burble.Abstractions;
 
 namespace Burble.Events
 {
-   using System;
-   using System.Collections.Generic;
-   using System.Net.Http;
-   using Burble.Abstractions;
-
    public class HttpClientRetryAttempt : IHttpClientEvent
    {
       public string EventType => nameof(HttpClientRetryAttempt);
@@ -28,7 +26,7 @@ namespace Burble.Events
          return new HttpClientRetryAttempt
          {
             Timestamp = DateTimeOffset.UtcNow,
-            Uri = request.AbsoluteRequestUri(baseAddress).ToString(),
+            Uri = new Uri(baseAddress, request.RequestUri).ToString(),
             Request = request,
             Attempt = attempt
          };

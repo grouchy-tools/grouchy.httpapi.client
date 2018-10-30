@@ -1,8 +1,8 @@
-﻿namespace Burble.Retrying
-{
-   using System.Net.Http;
-   using Burble.Abstractions;
+﻿using System.Net.Http;
+using Burble.Abstractions.Retrying;
 
+namespace Burble.Retrying
+{
    public class DefaultRetryPredicate : IRetryPredicate
    {
       private readonly int _maxAttempts;

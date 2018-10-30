@@ -15,6 +15,7 @@ using Shouldly;
 
 namespace Burble.Tests.retrying_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class multiple_retry_without_timeout
    {
       private const int ExpectedRetries = 3;
@@ -25,19 +26,14 @@ namespace Burble.Tests.retrying_scenarios
       private HttpResponseMessage _response;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
+         using (var httpClient = webApi.CreateClientWithRetrying(_callback, retries: ExpectedRetries, delayMs: 10))
          {
             _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
 
-            var httpClient = baseHttpClient.AddRetrying(
-               new StubRetryPredicate(ExpectedRetries),
-               new StubRetryDelay(10),
-               _callback);
-
-            _response = httpClient.GetAsync("/ping").Result;
+            _response = await httpClient.GetAsync("/ping");
          }
       }
 

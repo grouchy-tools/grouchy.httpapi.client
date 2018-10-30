@@ -15,19 +15,18 @@ using Shouldly;
 
 namespace Burble.Tests.instrumenting_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class request_and_response_events_are_extensible
    {
       private readonly CustomisingHttpClientEventCallback _callback = new CustomisingHttpClientEventCallback();
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task  setup_scenario()
       {
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
+         using (var httpClient = webApi.CreateClientWithInstrumenting(_callback))
          {
-            var httpClient = baseHttpClient.AddInstrumenting(_callback);
-
-            httpClient.GetAsync("/ping").Wait();
+            await httpClient.GetAsync("/ping");
          }
       }
       

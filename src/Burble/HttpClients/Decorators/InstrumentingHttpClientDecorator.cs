@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Burble.Abstractions;
+using Burble.Abstractions.Configuration;
 using Burble.Extensions;
 
 namespace Burble.HttpClients.Decorators
@@ -13,9 +14,15 @@ namespace Burble.HttpClients.Decorators
             _callbacks = callbacks;
         }
 
-        public IHttpClient Decorate(IHttpClient httpClient)
+        public IHttpClient Decorate(
+            IHttpClient httpClient,
+            IHttpApiConfiguration httpApiConfiguration)
         {
-            return httpClient.AddInstrumenting(_callbacks);
+            var httpApiWithInstrumenting = httpApiConfiguration as IHttpApiWithInstrumenting;
+
+            if (httpApiWithInstrumenting is null) return httpClient;
+
+            return httpClient.AddInstrumenting(httpApiWithInstrumenting, _callbacks);
         }
     }
 }

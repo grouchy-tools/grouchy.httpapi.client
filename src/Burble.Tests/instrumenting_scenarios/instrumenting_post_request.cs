@@ -16,6 +16,7 @@ using Shouldly;
 
 namespace Burble.Tests.instrumenting_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class instrumenting_post_request
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -24,18 +25,16 @@ namespace Burble.Tests.instrumenting_scenarios
       private HttpResponseMessage _response;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task  setup_scenario()
       {
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri })
+         using (var httpClient = webApi.CreateClientWithInstrumenting(_callback))
          {
             _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
 
-            var httpClient = baseHttpClient.AddInstrumenting(_callback);
-
             var request = new HttpRequestMessage(HttpMethod.Post, "/ping");
 
-            _response = httpClient.SendAsync(request, CancellationToken.None).Result;
+            _response = await httpClient.SendAsync(request, CancellationToken.None);
          }
       }
       
@@ -46,9 +45,9 @@ namespace Burble.Tests.instrumenting_scenarios
       }
 
       [Test]
-      public void should_return_content()
+      public async Task  should_return_content()
       {
-         var content = _response.Content.ReadAsStringAsync().Result;
+         var content = await _response.Content.ReadAsStringAsync();
 
          content.ShouldBe("pong");
       }

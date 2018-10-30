@@ -17,6 +17,7 @@ using Shouldly;
 
 namespace Burble.Tests.instrumenting_scenarios
 {
+   // ReSharper disable once InconsistentNaming
    public class time_out_request
    {
       private readonly StubHttpClientEventCallback _callback = new StubHttpClientEventCallback();
@@ -25,18 +26,16 @@ namespace Burble.Tests.instrumenting_scenarios
       private Exception _timeoutException;
 
       [OneTimeSetUp]
-      public void setup_scenario()
+      public async Task setup_scenario()
       {
          using (var webApi = new PingWebApi())
-         using (var baseHttpClient = new HttpClient { BaseAddress = webApi.BaseUri, Timeout = TimeSpan.FromMilliseconds(50) })
+         using (var httpClient = webApi.CreateClientWithInstrumenting(_callback, timeoutMs: 50))
          {
             _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
 
-            var httpClient = baseHttpClient.AddInstrumenting(_callback);
-
             try
             {
-               httpClient.GetAsync("/ping").Wait();
+               await httpClient.GetAsync("/ping");
             }
             catch (Exception e)
             {
@@ -74,16 +73,13 @@ namespace Burble.Tests.instrumenting_scenarios
       [Test]
       public void should_throw_http_client_timeout_exception()
       {
-         _timeoutException.ShouldBeOfType<AggregateException>();
-
-         var innerException = _timeoutException.InnerException;
-         innerException.ShouldBeOfType<HttpClientTimeoutException>();
+         _timeoutException.ShouldBeOfType<HttpClientTimeoutException>();
       }
 
       [Test]
       public void should_populate_http_client_timeout_exception()
       {
-         var timeoutException = (HttpClientTimeoutException)_timeoutException.InnerException;
+         var timeoutException = (HttpClientTimeoutException)_timeoutException;
 
          timeoutException.InnerException.ShouldBeNull();
          timeoutException.RequestUri.ToString().ShouldBe(_eventUri);
