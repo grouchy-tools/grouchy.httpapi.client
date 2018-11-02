@@ -15,9 +15,9 @@
   <PropertyGroup>
     <PackageId>Grouchy.HttpApi.Client</PackageId>
     <PackageTags>http;api;client;instrumenting;logging;retry;throttling</PackageTags>
-    <PackageLicenseUrl>https://github.com/acraven/???/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/grouchy-tools/grouchy.httpapi.client/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/acraven/???</RepositoryUrl>
+    <RepositoryUrl>git://github.com/grouchy-tools/grouchy.httpapi.client</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Grouchy.Abstractions" Version="0.0.1-preview0001" />
