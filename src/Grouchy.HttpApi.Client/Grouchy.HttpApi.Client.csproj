@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <!--<TargetFrameworks>net451;netstandard2.0</TargetFrameworks>-->
+    <Product>Grouchy.HttpApi.Client</Product>
+    <Title>Grouchy.HttpApi.Client</Title>
+    <Description>HTTP API library</Description>
+    <Authors>Andrew Craven</Authors>
+    <RootNamespace>Grouchy.HttpApi.Client</RootNamespace>
+    <AssemblyName>Grouchy.HttpApi.Client</AssemblyName>
+    <VersionPrefix>0.0.6</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>Grouchy.HttpApi.Client</PackageId>
+    <PackageTags>http;api;client;instrumenting;logging;retry;throttling</PackageTags>
+    <PackageLicenseUrl>https://github.com/acraven/???/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/acraven/???</RepositoryUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Grouchy.Abstractions" Version="0.0.1-preview0001" />
+    <PackageReference Include="Grouchy.HttpApi.Client.Abstractions" Version="0.0.1-preview0003" />
+    <PackageReference Include="Grouchy.Resilience.Abstractions" Version="0.0.1-preview0001" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+  <!--<ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">-->
+    <!--<Reference Include="System" />-->
+    <!--<Reference Include="System.Linq" />-->
+    <!--<Reference Include="System.Net.Http" />-->
+    <!--<Reference Include="System.Threading.Tasks" />-->
+  <!--</ItemGroup>-->
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.3" />
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Threading" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.1" />
+  </ItemGroup>
+</Project>

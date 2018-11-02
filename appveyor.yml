@@ -5,7 +5,7 @@
   skip_branch_with_pr: true
   version: '{branch}-build{build}'
   skip_tags: true
-  clone_depth: 1
+  clone_depth: 5
   configuration:
     - Debug
     - Release
@@ -32,7 +32,7 @@
       - stable
   version: '{branch}-build{build}'
   skip_tags: true
-  clone_depth: 1
+  clone_depth: 5
   configuration: Release
   before_build:
     - ps: Import-Module .\build\psake.psm1
