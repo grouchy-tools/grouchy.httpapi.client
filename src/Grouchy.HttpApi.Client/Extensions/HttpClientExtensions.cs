@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using Grouchy.Abstractions;
-using Grouchy.HttpApi.Client.Abstractions;
+using Grouchy.Abstractions.Tagging;
 using Grouchy.HttpApi.Client.Abstractions.Configuration;
+using Grouchy.HttpApi.Client.Abstractions.EventCallbacks;
+using Grouchy.HttpApi.Client.Abstractions.HttpClients;
+using Grouchy.HttpApi.Client.Abstractions.Tagging;
 using Grouchy.HttpApi.Client.HttpClients;
 using Grouchy.Resilience.Abstractions.CircuitBreaking;
 using Grouchy.Resilience.Abstractions.Retrying;
@@ -56,15 +59,19 @@ namespace Grouchy.HttpApi.Client.Extensions
             callbacks);
       }
 
-      public static IHttpClient AddIdentifyingHeaders(
+      public static IHttpClient AddTagging(
          this IHttpClient httpClient,
-         IGetCorrelationId correlationIdGetter,
+         ISessionIdAccessor sessionIdAccessor,
+         ICorrelationIdAccessor correlationIdAccessor,
+         IOutboundRequestIdAccessor outboundRequestIdAccessor,
          IGenerateGuids guidGenerator,
          IApplicationInfo applicationInfo)
       {
-         return new IdentifyingHttpClient(
+         return new TaggingHttpClient(
             httpClient,
-            correlationIdGetter,
+            sessionIdAccessor,
+            correlationIdAccessor,
+            outboundRequestIdAccessor,
             guidGenerator,
             applicationInfo);
       }

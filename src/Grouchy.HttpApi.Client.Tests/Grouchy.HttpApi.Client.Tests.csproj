@@ -14,9 +14,9 @@
     <ProjectReference Include="..\Grouchy.HttpApi.Client\Grouchy.HttpApi.Client.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Grouchy.HttpApi.Client.Testing" Version="0.0.1-preview0002" />
+    <PackageReference Include="Grouchy.HttpApi.Client.Testing" Version="0.0.1-preview0004" />
     <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="Shouldly" Version="3.0.1" />
+    <PackageReference Include="Shouldly" Version="3.0.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
   </ItemGroup>
   <!--<ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">-->

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Grouchy.HttpApi.Client.Abstractions;
+using Grouchy.HttpApi.Client.Abstractions.EventCallbacks;
+using Grouchy.HttpApi.Client.Abstractions.Events;
 
 namespace Grouchy.HttpApi.Client.Extensions
 {
@@ -14,10 +15,8 @@ namespace Grouchy.HttpApi.Client.Extensions
                 {
                     callback.Invoke(@event);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    // TODO: remove
-                    var m = e.Message;
                     // Just in case callback handler doesn't catch exceptions
                 }
             }

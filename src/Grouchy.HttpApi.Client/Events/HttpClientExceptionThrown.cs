@@ -1,37 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Grouchy.HttpApi.Client.Abstractions;
-using Newtonsoft.Json;
+using Grouchy.HttpApi.Client.Abstractions.Events;
 
 namespace Grouchy.HttpApi.Client.Events
 {
-   public class HttpClientExceptionThrown : IHttpClientEvent
+   public class HttpClientExceptionThrown : IHttpClientExceptionEvent
    {
       public string EventType => nameof(HttpClientExceptionThrown);
 
       public DateTimeOffset Timestamp { get; set; }
 
+      public string Method { get; set; }
+
+      public string TargetService { get; set; }
+
       public string Uri { get; set; }
 
-      public string Method => Request.Method.Method;
-
       public IDictionary<string, object> Tags { get; } = new Dictionary<string, object>();
-
-      [JsonIgnore]
-      public HttpRequestMessage Request { get; set; }
 
       public long DurationMs { get; set; }
 
       public Exception Exception { get; set; }
 
-      public static HttpClientExceptionThrown Create(HttpRequestMessage request, Uri baseAddress, long durationMs, Exception exception)
+      public static HttpClientExceptionThrown Create(HttpRequestMessage request, string targetService, Uri baseAddress, long durationMs, Exception exception)
       {
          return new HttpClientExceptionThrown
          {
             Timestamp = DateTimeOffset.UtcNow,
+            Method = request.Method.Method,
+            TargetService = targetService,
             Uri = new Uri(baseAddress, request.RequestUri).ToString(),
-            Request = request,
             DurationMs = durationMs,
             Exception = exception
          };

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Grouchy.HttpApi.Client.Abstractions;
+using Grouchy.HttpApi.Client.Abstractions.EventCallbacks;
+using Grouchy.HttpApi.Client.Abstractions.Events;
 using Grouchy.HttpApi.Client.Events;
 
 namespace Grouchy.HttpApi.Client.Tests.Stubs

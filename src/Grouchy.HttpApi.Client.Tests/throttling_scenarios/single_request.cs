@@ -4,7 +4,6 @@ using System.Net.Http;
 using Grouchy.HttpApi.Client.Abstractions.Extensions;
 using Grouchy.HttpApi.Client.Extensions;
 using Grouchy.HttpApi.Client.Tests.Configuration;
-using Grouchy.HttpApi.Client.Tests.retrying_scenarios;
 using Grouchy.HttpApi.Client.Tests.Stubs;
 using NUnit.Framework;
 using Shouldly;

@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Grouchy.HttpApi.Client.Abstractions;
 using Grouchy.HttpApi.Client.Abstractions.Configuration;
+using Grouchy.HttpApi.Client.Abstractions.HttpClients;
 
 namespace Grouchy.HttpApi.Client.HttpClients
 {

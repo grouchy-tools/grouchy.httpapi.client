@@ -21,6 +21,8 @@ namespace Grouchy.HttpApi.Client.Tests.Stubs
 
       public bool ShouldAcceptResponse { get; set; }
 
+      public string Policy { get; set; }
+      
       public double ClosedPct { get; set; }
 
       public bool ShouldAccept()

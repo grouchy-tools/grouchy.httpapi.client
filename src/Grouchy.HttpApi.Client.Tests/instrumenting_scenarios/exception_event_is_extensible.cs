@@ -36,6 +36,9 @@ namespace Grouchy.HttpApi.Client.Tests.instrumenting_scenarios
       public void should_log_exception_thrown()
       {
          var lastRequest = _callback.ExceptionsThrown.Last();
+         
+         //Assert.That(lastRequest.Tags.Count, Is.EqualTo(1));
+         
          lastRequest.Tags.Count.ShouldBe(1);
          lastRequest.Tags["Key"].ShouldBe("HttpClientExceptionThrown");
       }

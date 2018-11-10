@@ -4,9 +4,10 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Grouchy.HttpApi.Client.Abstractions;
 using Grouchy.HttpApi.Client.Abstractions.Configuration;
+using Grouchy.HttpApi.Client.Abstractions.EventCallbacks;
 using Grouchy.HttpApi.Client.Abstractions.Exceptions;
+using Grouchy.HttpApi.Client.Abstractions.HttpClients;
 using Grouchy.HttpApi.Client.Events;
 using Grouchy.HttpApi.Client.Extensions;
 
@@ -30,7 +31,7 @@ namespace Grouchy.HttpApi.Client.HttpClients
 
       public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
-         _callbacks.Invoke(HttpClientRequestInitiated.Create(request, _httpApiWithInstrumenting.Uri));
+         _callbacks.Invoke(HttpClientRequestInitiated.Create(request, _httpApiWithInstrumenting.Name, _httpApiWithInstrumenting.Uri));
 
          var stopwatch = Stopwatch.StartNew();
 
@@ -41,21 +42,21 @@ namespace Grouchy.HttpApi.Client.HttpClients
          }
          catch (TaskCanceledException)
          {
-            _callbacks.Invoke(HttpClientTimedOut.Create(request, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds));
+            _callbacks.Invoke(HttpClientTimedOut.Create(request, _httpApiWithInstrumenting.Name, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds));
             throw new HttpClientTimeoutException(request.Method, new Uri(_httpApiWithInstrumenting.Uri, request.RequestUri));
          }
          catch (HttpRequestException e) when (IsServerUnavailable(e))
          {
-            _callbacks.Invoke(HttpClientServerUnavailable.Create(request, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds));
+            _callbacks.Invoke(HttpClientServerUnavailable.Create(request, _httpApiWithInstrumenting.Name, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds));
             throw new HttpClientServerUnavailableException(request.Method, new Uri(_httpApiWithInstrumenting.Uri, request.RequestUri));
          }
          catch (Exception e)
          {
-            _callbacks.Invoke(HttpClientExceptionThrown.Create(request, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds, e));
+            _callbacks.Invoke(HttpClientExceptionThrown.Create(request, _httpApiWithInstrumenting.Name, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds, e));
             throw new HttpClientException(request.Method, new Uri(_httpApiWithInstrumenting.Uri, request.RequestUri), e);
          }
 
-         _callbacks.Invoke(HttpClientResponseReceived.Create(response, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds));
+         _callbacks.Invoke(HttpClientResponseReceived.Create(response, _httpApiWithInstrumenting.Name, _httpApiWithInstrumenting.Uri, stopwatch.ElapsedMilliseconds));
 
          return response;
       }

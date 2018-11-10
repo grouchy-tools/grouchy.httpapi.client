@@ -4,8 +4,9 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Grouchy.HttpApi.Client.Abstractions;
 using Grouchy.HttpApi.Client.Abstractions.Configuration;
+using Grouchy.HttpApi.Client.Abstractions.EventCallbacks;
+using Grouchy.HttpApi.Client.Abstractions.HttpClients;
 using Grouchy.HttpApi.Client.Events;
 using Grouchy.HttpApi.Client.Extensions;
 using Grouchy.Resilience.Abstractions.Retrying;
@@ -70,7 +71,7 @@ namespace Grouchy.HttpApi.Client.HttpClients
                var delayMs = _retryDelay.DelayMs(retryAttempts);
                await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
 
-               _callbacks.Invoke(HttpClientRetryAttempt.Create(request, _httpApiWithRetrying.Uri, retryAttempts));
+               _callbacks.Invoke(HttpClientRetryAttempt.Create(request, _httpApiWithRetrying.Name, _httpApiWithRetrying.Uri, retryAttempts));
             }
          }
          finally

@@ -8,7 +8,7 @@
     <Authors>Andrew Craven</Authors>
     <RootNamespace>Grouchy.HttpApi.Client</RootNamespace>
     <AssemblyName>Grouchy.HttpApi.Client</AssemblyName>
-    <VersionPrefix>0.0.6</VersionPrefix>
+    <VersionPrefix>0.0.1</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -20,9 +20,8 @@
     <RepositoryUrl>git://github.com/grouchy-tools/grouchy.httpapi.client</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Grouchy.Abstractions" Version="0.0.1-preview0001" />
-    <PackageReference Include="Grouchy.HttpApi.Client.Abstractions" Version="0.0.1-preview0003" />
-    <PackageReference Include="Grouchy.Resilience.Abstractions" Version="0.0.1-preview0001" />
+    <PackageReference Include="Grouchy.HttpApi.Client.Abstractions" Version="0.0.1-preview0007" />
+    <PackageReference Include="Grouchy.Resilience.Abstractions" Version="0.0.1-preview0003" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <!--<ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">-->

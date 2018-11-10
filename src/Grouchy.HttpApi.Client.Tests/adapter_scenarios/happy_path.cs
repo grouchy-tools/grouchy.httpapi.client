@@ -2,15 +2,9 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Grouchy.HttpApi.Client.Abstractions.Extensions;
-using Grouchy.HttpApi.Client.Testing;
 using Grouchy.HttpApi.Client.Tests.Extensions;
 using NUnit.Framework;
 using Shouldly;
-#if NET451
-   using HttpContext = Microsoft.Owin.IOwinContext;
-#else
-   using Microsoft.AspNetCore.Http;
-#endif
 
 namespace Grouchy.HttpApi.Client.Tests.adapter_scenarios
 {
@@ -41,22 +35,6 @@ namespace Grouchy.HttpApi.Client.Tests.adapter_scenarios
          var content = await _response.Content.ReadAsStringAsync();
 
          content.ShouldBe("pong");
-      }
-
-      private class PingHttpApi : StubHttpApi
-      {
-         protected override async Task Handler(HttpContext context)
-         {
-            if (context.Request.Method == "GET" && context.Request.Path.ToString() == "/ping")
-            {
-               context.Response.StatusCode = (int)HttpStatusCode.OK;
-               await context.Response.WriteAsync("pong");
-            }
-            else
-            {
-               await base.Handler(context);
-            }
-         }
       }
    }
 }

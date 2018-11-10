@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Grouchy.HttpApi.Client.Abstractions.Exceptions;
 using Grouchy.HttpApi.Client.Abstractions.Extensions;
-using Grouchy.HttpApi.Client.Testing;
 using Grouchy.HttpApi.Client.Tests.Extensions;
 using Grouchy.HttpApi.Client.Tests.Stubs;
 using NUnit.Framework;
 using Shouldly;
-
-#if NET451
-   using HttpContext = Microsoft.Owin.IOwinContext;
-#else
-   using Microsoft.AspNetCore.Http;
-#endif
 
 namespace Grouchy.HttpApi.Client.Tests.instrumenting_scenarios
 {
@@ -30,7 +22,7 @@ namespace Grouchy.HttpApi.Client.Tests.instrumenting_scenarios
       [OneTimeSetUp]
       public async Task  setup_scenario()
       {
-         using (var webApi = new PingHttpApi())
+         using (var webApi = new PingHttpApi { Latency = 2000 })
          using (var httpClient = webApi.CreateClientWithInstrumenting(_callback))
          {
             _eventUri = new Uri(webApi.BaseUri, "/ping").ToString();
@@ -76,23 +68,6 @@ namespace Grouchy.HttpApi.Client.Tests.instrumenting_scenarios
       public void should_throw_http_client_timeout_exception()
       {
          _timeoutException.ShouldBeOfType<HttpClientTimeoutException>();
-      }
-
-      private class PingHttpApi : StubHttpApi
-      {
-         protected override async Task Handler(HttpContext context)
-         {
-            if (context.Request.Method == "GET" && context.Request.Path.ToString() == "/ping")
-            {
-               await Task.Delay(2000);
-               context.Response.StatusCode = (int)HttpStatusCode.OK;
-               await context.Response.WriteAsync("pong");
-            }
-            else
-            {
-               await base.Handler(context);
-            }
-         }
       }
    }
 }

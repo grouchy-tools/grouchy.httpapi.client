@@ -2,14 +2,15 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Grouchy.HttpApi.Client.Abstractions;
+using Grouchy.Abstractions;
+using Grouchy.Abstractions.Tagging;
+using Grouchy.HttpApi.Client.Abstractions.EventCallbacks;
+using Grouchy.HttpApi.Client.Abstractions.HttpClients;
+using Grouchy.HttpApi.Client.Abstractions.Tagging;
 using Grouchy.HttpApi.Client.Extensions;
 using Grouchy.HttpApi.Client.HttpClients;
 using Grouchy.HttpApi.Client.Testing;
-using Grouchy.HttpApi.Client.Tests.adapter_scenarios;
 using Grouchy.HttpApi.Client.Tests.Configuration;
-using Grouchy.HttpApi.Client.Tests.instrumenting_scenarios;
-using Grouchy.HttpApi.Client.Tests.retrying_scenarios;
 using Grouchy.HttpApi.Client.Tests.Stubs;
 
 namespace Grouchy.HttpApi.Client.Tests.Extensions
@@ -29,7 +30,15 @@ namespace Grouchy.HttpApi.Client.Tests.Extensions
                     
          return new DisposableHttpClient(httpClient, httpClient.AddInstrumenting(configuration, new []{callback}));
       }
-      
+
+      public static DisposableHttpClient CreateClientWithTagging(this StubHttpApi api, ISessionIdAccessor sessionIdAccessor, ICorrelationIdAccessor correlationIdAccessor, IOutboundRequestIdAccessor outboundRequestIdAccessor, IGenerateGuids guidGenerator, IApplicationInfo applicationInfo, int timeoutMs = 3000)
+      {
+         var configuration = new InstrumentingConfiguration { Uri = api.BaseUri,TimeoutMs = timeoutMs };
+         var httpClient = new DefaultHttpClient(configuration);
+                    
+         return new DisposableHttpClient(httpClient, httpClient.AddTagging(sessionIdAccessor, correlationIdAccessor, outboundRequestIdAccessor, guidGenerator, applicationInfo));
+      }
+
       public static DisposableHttpClient CreateClientWithRetrying(this StubHttpApi api, IHttpClientEventCallback callback, int retries, int delayMs, int timeoutMs = 3000)
       {
          var retryManager = new StubRetryManager {Delay = new StubRetryDelay(delayMs), Predicate = new StubRetryPredicate(retries)}; 

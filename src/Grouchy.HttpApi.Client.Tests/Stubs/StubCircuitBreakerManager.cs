@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Grouchy.Resilience.Abstractions.CircuitBreaking;
@@ -21,6 +22,11 @@ namespace Grouchy.HttpApi.Client.Tests.Stubs
       public ICircuitBreakerState GetState(string policy)
       {
          return State;
+      }
+
+      public IEnumerable<ICircuitBreakerState> GetStates()
+      {
+         yield return State;
       }
 
       public Task StopMonitoringAsync(CancellationToken cancellationToken)

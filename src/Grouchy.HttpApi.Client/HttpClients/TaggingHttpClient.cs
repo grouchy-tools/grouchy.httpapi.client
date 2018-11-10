@@ -3,32 +3,40 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Grouchy.Abstractions;
-using Grouchy.HttpApi.Client.Abstractions;
+using Grouchy.Abstractions.Tagging;
+using Grouchy.HttpApi.Client.Abstractions.HttpClients;
+using Grouchy.HttpApi.Client.Abstractions.Tagging;
 
 namespace Grouchy.HttpApi.Client.HttpClients
 {
    /// <summary>
-   /// Add correlation-id and request-id to the request header, creating a new id if necessary
+   /// Add session-id, correlation-id and request-id to the request header
    /// </summary>
-   public class IdentifyingHttpClient : IHttpClient
+   public class TaggingHttpClient : IHttpClient
    {
       private const string UserAgentHeader = "User-Agent";
 
       private readonly IHttpClient _httpClient;
-      private readonly IGetCorrelationId _correlationIdGetter;
+      private readonly ISessionIdAccessor _sessionIdAccessor;
+      private readonly ICorrelationIdAccessor _correlationIdAccessor;
+      private readonly IOutboundRequestIdAccessor _outboundRequestIdAccessor;
       private readonly IGenerateGuids _guidGenerator;
       private readonly string _userAgent;
 
-      public IdentifyingHttpClient(
+      public TaggingHttpClient(
          IHttpClient httpClient,
-         IGetCorrelationId correlationIdGetter,
+         ISessionIdAccessor sessionIdGetter,
+         ICorrelationIdAccessor correlationIdGetter,
+         IOutboundRequestIdAccessor outboundRequestIdAccessor,
          IGenerateGuids guidGenerator,
          IApplicationInfo applicationInfo)
       {
          _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-         _correlationIdGetter = correlationIdGetter ?? throw new ArgumentNullException(nameof(correlationIdGetter));
+         _sessionIdAccessor = sessionIdGetter ?? throw new ArgumentNullException(nameof(sessionIdGetter));
+         _correlationIdAccessor = correlationIdGetter ?? throw new ArgumentNullException(nameof(correlationIdGetter));
+         _outboundRequestIdAccessor = outboundRequestIdAccessor ?? throw new ArgumentNullException(nameof(outboundRequestIdAccessor));
          _guidGenerator = guidGenerator ?? throw new ArgumentNullException(nameof(guidGenerator));
-         
+
          if (applicationInfo == null) throw new ArgumentNullException(nameof(applicationInfo));
 
          _userAgent = BuildUserAgent(applicationInfo);
@@ -36,10 +44,15 @@ namespace Grouchy.HttpApi.Client.HttpClients
 
       public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
-         request.Headers.Add(UserAgentHeader, _userAgent);
-         request.Headers.Add("correlation-id", _correlationIdGetter.Get());
-         request.Headers.Add("request-id", _guidGenerator.Generate().ToString());
+         // TODO: Does this even work with multiple outbound requests?
+         var outboundRequestId = _guidGenerator.Generate().ToString();
+         _outboundRequestIdAccessor.OutboundRequestId = outboundRequestId;
 
+         request.Headers.Add(UserAgentHeader, _userAgent);
+         request.Headers.Add("session-id", _sessionIdAccessor.SessionId);
+         request.Headers.Add("correlation-id", _correlationIdAccessor.CorrelationId);
+         request.Headers.Add("request-id", outboundRequestId);
+         
          return _httpClient.SendAsync(request, cancellationToken);
       }
 
