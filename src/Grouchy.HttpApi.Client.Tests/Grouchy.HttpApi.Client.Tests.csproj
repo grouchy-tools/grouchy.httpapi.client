@@ -17,7 +17,7 @@
     <PackageReference Include="Grouchy.HttpApi.Client.Testing" Version="0.0.1-preview0007" />
     <PackageReference Include="NUnit" Version="3.10.1" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.0" />
   </ItemGroup>
   <!--<ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">-->
     <!--<PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="3.0.1" />-->
