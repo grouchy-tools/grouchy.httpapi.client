@@ -22,7 +22,7 @@
   <ItemGroup>
     <PackageReference Include="Grouchy.HttpApi.Client.Abstractions" Version="0.0.1-preview0007" />
     <PackageReference Include="Grouchy.Resilience.Abstractions" Version="0.0.1-preview0003" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <!--<ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">-->
     <!--<Reference Include="System" />-->
